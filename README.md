@@ -37,6 +37,7 @@ satark-disaster-system/
 ├── *.pth (Not in repo)       # Large model weights (see Setup)
 ├── run_project.py            # Automated startup script
 ├── requirements.txt          # Global project dependencies
+├── train_vit_*.py            # Scripts to train the ViT models from scratch
 └── evaluate_*.py             # Scripts for model evaluation/testing
 ```
 
@@ -66,7 +67,7 @@ pip install -r requirements.txt
 ### 4. Setup Model Weights (Crucial Step)
 Because GitHub has a 100MB file limit, the large Vision Transformer `.pth` models (~343MB each) are **not included** in this repository. 
 
-To run the inference server, you must obtain or train the following model files and place them in the **root directory** of the project:
+To run the inference server, you must either **train the models yourself** (see section below) or obtain the pre-trained weights and place them in the **root directory**:
 - `vit_flood2_model.pth`
 - `vit_wildfire2_model.pth`
 - `vit_cyclone_model.pth`
@@ -87,6 +88,22 @@ python run_project.py
 
 ---
 
+## 🧠 Training Your Own Models
+
+This repository includes the complete end-to-end pipeline, not just the inference UI! If you want to train the models from scratch or fine-tune them on your own dataset, you can use the provided training scripts:
+
+- `train_vit_cyclone.py`
+- `train_vit_flood2.py`
+- `train_vit_floodnet.py`
+- `train_vit_wildfire2.py`
+
+**To train a model:**
+1. Ensure your dataset is structured correctly (e.g., in folders like `train/Yes` and `train/No` depending on the script).
+2. Run the script: `python train_vit_cyclone.py`
+3. The script will fine-tune the `google/vit-base-patch16-224-in21k` model on your dataset and automatically output the `.pth` file needed for the web app!
+
+---
+
 ## 🧪 Testing and Evaluation
 
 If you wish to evaluate the models against a test dataset, you can use the provided evaluation scripts. 
@@ -95,6 +112,7 @@ If you wish to evaluate the models against a test dataset, you can use the provi
 python evaluate_cyclone.py
 ```
 This will process the images in your local test directories and generate performance metrics (`cyclone_final_metrics.txt`) and visualization plots (e.g., Confusion Matrices).
+
 
 ---
 

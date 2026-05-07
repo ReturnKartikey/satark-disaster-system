@@ -21,6 +21,27 @@ Furthermore, the system features a **Resource Allocation Engine** that calculate
 
 ---
 
+## 📸 Project Screenshots
+
+Here is a look at the SATARK platform in action:
+
+**1. Main Dashboard**
+![Main Dashboard](assets/dashboard.png)
+
+**2. Cyclone Detection Interface**
+![Cyclone Interface](assets/cyclone_interface.png)
+
+**3. Location Analytics & Resource Mapping**
+![Location Analytics](assets/la.png)
+
+**4. Real-time Prediction Examples**
+<p float="left">
+  <img src="assets/1.png" width="49%" />
+  <img src="assets/2.png" width="49%" />
+</p>
+
+---
+
 ## 📂 Project Structure
 
 ```text

@@ -1,56 +1,105 @@
-# SATARK: Disaster Management System
+<div align="center">
+  <h1>🌪️ SATARK: Disaster Management System</h1>
+  <p><i>Sensing and Tracking for Advanced Relief and Knowledge</i></p>
+  <p>An AI-powered web platform for real-time disaster classification (Flood, Cyclone, Wildfire) using Vision Transformers (ViT) and intelligent resource allocation.</p>
+</div>
 
-**SATARK** (Sensing and Tracking for Advanced Relief and Knowledge) is an AI-powered disaster management platform designed to detect and respond to natural disasters like **Floods, Cyclones, and Wildfires** using satellite imagery and Vision Transformers (ViT).
+---
 
-## 🚀 Features
-- **Multi-Disaster Detection**: Real-time classification for Floods, Wildfires, and Cyclones.
-- **Deep Learning Core**: Built using state-of-the-art Vision Transformers (ViT) from Hugging Face.
-- **Interactive Web Interface**: A sleek, glassmorphism-inspired dashboard for uploading images and viewing predictions.
-- **Resource Allocation**: Automatically finds the nearest emergency resources (Hospitals, NDRF units, Fire Stations) based on the disaster location.
-- **Visual Analytics**: Performance metrics including Confusion Matrices and ROC Curves for model transparency.
+## 📖 About the Project
 
-## 🛠️ Tech Stack
-- **Frontend**: HTML5, Vanilla CSS3 (Glassmorphism), JavaScript (Fetch API).
-- **Backend**: Flask (Python), Flask-CORS.
-- **AI/ML**: PyTorch, Torchvision, Transformers (ViT Base).
-- **Data Handling**: Pillow, NumPy, Matplotlib.
+**SATARK** is designed to bridge the gap between disaster detection and emergency response. By analyzing satellite imagery using advanced Deep Learning models (Vision Transformers), it can accurately identify the presence of floods, cyclones, and wildfires. 
 
-## 📦 Installation
+Furthermore, the system features a **Resource Allocation Engine** that calculates the distance to nearby emergency responders (Hospitals, NDRF battalions, Fire Stations) using the Haversine formula, providing an estimated time of arrival (ETA) for critical relief.
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/satark-disaster-system.git
-   cd satark-disaster-system
-   ```
+### ✨ Key Features
+- **🧠 ViT-Powered Classification**: Utilizes `google/vit-base-patch16-224-in21k` fine-tuned on disaster datasets for high-accuracy image classification.
+- **📍 Smart Resource Allocation**: Calculates the nearest emergency resources based on geographic coordinates.
+- **💻 Glassmorphism UI**: A highly interactive, modern, and responsive web interface built with vanilla HTML/CSS/JS.
+- **⚙️ Flask API Backend**: A lightweight, fast, and robust backend handling model inference and routing.
+- **📊 Evaluation Metrics**: Built-in scripts to generate Confusion Matrices and ROC curves.
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+---
 
-3. **Download Model Weights**:
-   The model weights (`.pth` files) are large and not included in this repository. Ensure you have the following files in the root directory:
-   - `vit_flood2_model.pth`
-   - `vit_wildfire2_model.pth`
-   - `vit_cyclone_model.pth`
+## 📂 Project Structure
 
-## 🖥️ Usage
+```text
+satark-disaster-system/
+├── backend/                  # Flask server and API endpoints
+│   ├── app.py                # Main backend logic and model inference
+│   └── requirements.txt      # Backend dependencies
+├── FRONTEND/                 # UI Templates (HTML/CSS/JS)
+│   ├── home.html             # Landing page
+│   ├── flood.html            # Flood detection interface
+│   ├── cyclone.html          # Cyclone detection interface
+│   ├── wildfire.html         # Wildfire detection interface
+│   └── resources.html        # Resource mapping dashboard
+├── *.pth (Not in repo)       # Large model weights (see Setup)
+├── run_project.py            # Automated startup script
+├── requirements.txt          # Global project dependencies
+└── evaluate_*.py             # Scripts for model evaluation/testing
+```
 
-Run the main project script:
+---
+
+## 🛠️ Getting Started (For Developers & Users)
+
+To run this project locally, follow these precise steps.
+
+### 1. Prerequisites
+Ensure you have the following installed on your system:
+- **Python 3.9+**
+- **Git**
+
+### 2. Clone the Repository
+```bash
+git clone https://github.com/ReturnKartikey/satark-disaster-system.git
+cd satark-disaster-system
+```
+
+### 3. Install Dependencies
+Install all required Python libraries (PyTorch, Flask, Transformers, etc.):
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Setup Model Weights (Crucial Step)
+Because GitHub has a 100MB file limit, the large Vision Transformer `.pth` models (~343MB each) are **not included** in this repository. 
+
+To run the inference server, you must obtain or train the following model files and place them in the **root directory** of the project:
+- `vit_flood2_model.pth`
+- `vit_wildfire2_model.pth`
+- `vit_cyclone_model.pth`
+
+*(Note: If you are evaluating the project and do not have these files, the server will still start, but prediction endpoints will return an error stating the model is missing).*
+
+### 5. Run the Application
+We have provided an automated script to start the environment:
 ```bash
 python run_project.py
 ```
-This will:
-1. Check for required libraries.
-2. Load the AI models.
-3. Start the Flask server.
-4. Automatically open your browser to `http://127.0.0.1:5000`.
+**What this script does:**
+1. Verifies all required dependencies are installed.
+2. Locates `backend/app.py`.
+3. Loads the `.pth` models into Memory/GPU.
+4. Starts the Flask server on `http://127.0.0.1:5000`.
+5. Automatically opens your default web browser to the SATARK dashboard.
 
-## 📊 Model Performance
-Model evaluations can be found in the root directory:
-- `flood2_confusion_matrix.png`
-- `cyclone_final_metrics.txt`
-- `wildfire2_roc_curve.png`
+---
 
-## ⚖️ License
-This project is part of a Minor/Major project submission. All rights reserved.
+## 🧪 Testing and Evaluation
+
+If you wish to evaluate the models against a test dataset, you can use the provided evaluation scripts. 
+*Example:*
+```bash
+python evaluate_cyclone.py
+```
+This will process the images in your local test directories and generate performance metrics (`cyclone_final_metrics.txt`) and visualization plots (e.g., Confusion Matrices).
+
+---
+
+## 🤝 Contributing
+Contributions, issues, and feature requests are welcome! Feel free to check the issues page.
+
+## 📝 License
+This project is part of a Minor/Major academic project. All rights reserved by the original creators.

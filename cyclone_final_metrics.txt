@@ -1,0 +1,15 @@
+CYCLONE EVALUATION (UNSEEN TEST SET)
+====================================
+Total Test Images: 119
+Accuracy: 0.9832
+ROC AUC: 0.9997
+
+Classification Report:
+              precision    recall  f1-score   support
+
+          no       0.96      1.00      0.98        44
+         yes       1.00      0.97      0.99        75
+
+    accuracy                           0.98       119
+   macro avg       0.98      0.99      0.98       119
+weighted avg       0.98      0.98      0.98       119

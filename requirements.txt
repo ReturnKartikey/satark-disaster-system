@@ -1,0 +1,10 @@
+flask
+flask-cors
+torch
+torchvision
+transformers
+pillow
+numpy
+matplotlib
+scikit-learn
+h5py

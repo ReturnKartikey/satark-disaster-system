@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary": "#ffffff",
+                    "inverse-surface": "#2d3134",
+                    "background": "#f8f9fe",
+                    "surface-container": "#eceef2",
+                    "surface-dim": "#d8dade",
+                    "on-surface-variant": "#40484f",
+                    "on-primary-fixed": "#001e30",
+                    "on-surface": "#191c1f",
+                    "tertiary": "#6a3b00",
+                    "primary-fixed-dim": "#8ecdff",
+                    "on-secondary-fixed": "#171c1f",
+                    "on-primary-container": "#b6ddff",
+                    "inverse-on-surface": "#eff1f5",
+                    "secondary": "#5a5f62",
+                    "surface-container-high": "#e6e8ed",
+                    "error": "#ba1a1a",
+                    "tertiary-container": "#8b5001",
+                    "secondary-container": "#dce0e4",
+                    "tertiary-fixed": "#ffdcbf",
+                    "secondary-fixed-dim": "#c3c7cb",
+                    "on-secondary-container": "#5e6367",
+                    "on-primary": "#ffffff",
+                    "on-error": "#ffffff",
+                    "surface-tint": "#006494",
+                    "error-container": "#ffdad6",
+                    "outline": "#707880",
+                    "on-error-container": "#93000a",
+                    "surface-bright": "#f8f9fe",
+                    "primary-fixed": "#cbe6ff",
+                    "surface-variant": "#e0e2e7",
+                    "outline-variant": "#c0c7d0",
+                    "on-tertiary": "#ffffff",
+                    "primary": "#004b71",
+                    "surface-container-lowest": "#ffffff",
+                    "on-background": "#191c1f",
+                    "surface": "#f8f9fe",
+                    "on-tertiary-container": "#ffcfa5",
+                    "surface-container-highest": "#e0e2e7",
+                    "secondary-fixed": "#dfe3e7",
+                    "on-tertiary-fixed-variant": "#6a3c00",
+                    "on-secondary-fixed-variant": "#43474b",
+                    "on-primary-fixed-variant": "#004b71",
+                    "tertiary-fixed-dim": "#ffb872",
+                    "primary-container": "#006494",
+                    "on-tertiary-fixed": "#2d1600",
+                    "surface-container-low": "#f2f4f8",
+                    "inverse-primary": "#8ecdff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "lg": "48px",
+                    "xs": "4px",
+                    "xl": "80px",
+                    "gutter": "24px",
+                    "base": "8px",
+                    "md": "24px",
+                    "margin": "32px",
+                    "sm": "12px"
+            },
+            "fontFamily": {
+                    "h1": ["Manrope"],
+                    "body-md": ["Manrope"],
+                    "label-sm": ["Manrope"],
+                    "h3": ["Manrope"],
+                    "label-md": ["Manrope"],
+                    "h2": ["Manrope"],
+                    "display": ["Manrope"],
+                    "body-lg": ["Manrope"],
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Plus Jakarta Sans"]
+            },
+            "fontSize": {
+                    "h1": ["32px", {"lineHeight": "1.3", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "h3": ["20px", {"lineHeight": "1.4", "fontWeight": "600"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "h2": ["24px", {"lineHeight": "1.4", "fontWeight": "700"}],
+                    "display": ["48px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #006494 0%, #004b71 100%);
+        }
+        .atmospheric-shadow {
+            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 bg-white/70 backdrop-blur-xl border-b border-surface-container transition-all duration-300">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-primary font-headline uppercase">SATARK: Editorial Resilience</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-label" href="#">Monitoring</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-label" href="#">Resources</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-label" href="#">Safety</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm font-label" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-4">
+<button aria-label="Toggle Theme" class="p-2 hover:bg-surface-container rounded-full transition-all duration-300 text-primary group">
+<span class="material-symbols-outlined group-hover:rotate-45 transition-transform duration-300" data-icon="light_mode">light_mode</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-all duration-300 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-container rounded-full transition-all duration-300 text-on-surface-variant">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant ml-2">
+<img alt="Crisis Operator Profile" class="w-full h-full object-cover" data-alt="A focused crisis management operator in a brightly lit professional high-tech control room environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNstQ_XwNYqUXHOr7untHizzRxVhbXoU4l_2OGgItukTAabTUPnRDKC6nW0RCfk2t-c3znB3lkz9-C71Mnf_SWKz6PFCMsVuhb6oYG2LH5TtCZbd_jlXGKwCWztDMLb4m8rwrOalYGCsdMloQv1yFA8zsbi6MYpAtMUGn26sHqFNIUFvw2Vj4JOMOgrU8P_PNDmxRPIAna6pQ_0oHdyZGBEQ8fbVX-ytWMF3GEOu89Pj2pfjoF2KA121y2czeK3w2dN9ouaJ4zkY_V"/>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- Side Navigation Rail -->
+<aside class="fixed left-0 h-[calc(100vh-4rem)] w-64 bg-white border-r border-surface-container flex flex-col py-6 rounded-r-[3rem] z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-on-surface font-headline leading-tight">Sentinel Hub</h2>
+<p class="text-xs text-primary font-label tracking-wide">Active Monitoring</p>
+</div>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-primary mx-2 my-1 transition-all duration-300 font-label group" href="#">
+<span class="material-symbols-outlined" data-icon="tsunami">tsunami</span>
+<span>Flood Analysis</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 bg-primary/10 text-primary rounded-full mx-2 my-1 transition-all duration-300 font-label" href="#">
+<span class="material-symbols-outlined" data-icon="local_fire_department" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-bold">Wildfire Tracking</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-primary mx-2 my-1 transition-all duration-300 font-label group" href="#">
+<span class="material-symbols-outlined" data-icon="cyclone">cyclone</span>
+<span>Cyclone Path</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-primary mx-2 my-1 transition-all duration-300 font-label group" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+<span>ML Insights</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-on-surface-variant hover:text-primary mx-2 my-1 transition-all duration-300 font-label group" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+<span>Heatmaps</span>
+</a>
+</div>
+<div class="px-4 mt-auto">
+<button class="w-full py-4 rounded-xl bg-gradient-primary text-on-primary font-bold shadow-lg hover:shadow-xl transition-all duration-300 mb-6 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+                    Emergency Dispatch
+                </button>
+<div class="space-y-1 pt-4 border-t border-surface-container">
+<a class="flex items-center gap-4 px-6 py-2 text-on-surface-variant hover:text-primary transition-colors text-xs font-label" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="phone_in_talk">phone_in_talk</span>
+                        Help Line
+                    </a>
+<a class="flex items-center gap-4 px-6 py-2 text-on-surface-variant hover:text-primary transition-colors text-xs font-label" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="menu_book">menu_book</span>
+                        Documentation
+                    </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 p-8">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Hero / Detection Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left: Upload & Analysis -->
+<div class="lg:col-span-7 space-y-6">
+<div class="bg-white border border-surface-container rounded-xl p-8 atmospheric-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="px-3 py-1 bg-error-container text-on-error-container rounded-full text-xs font-bold font-label animate-pulse">LIVE DETECTION</span>
+</div>
+<h1 class="text-4xl font-extrabold font-headline mb-4 tracking-tight text-on-surface">Active Fire Detection</h1>
+<p class="text-on-surface-variant max-w-xl mb-8 leading-relaxed">Utilize real-time satellite imagery and ground-level vision models to identify active thermal anomalies and fire vectors.</p>
+<div class="border-2 border-dashed border-outline-variant rounded-xl p-12 flex flex-col items-center justify-center text-center hover:bg-surface-container-low transition-all duration-300 cursor-pointer">
+<div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-4 text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<h3 class="text-lg font-bold mb-1 text-on-surface">Upload Surveillance Feed</h3>
+<p class="text-sm text-on-surface-variant">Drag imagery or connect IP Camera stream (RTSP/ONVIF)</p>
+</div>
+</div>
+<!-- ML Results Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-white border border-surface-container p-6 rounded-lg atmospheric-shadow">
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-2">Active Hotspots</p>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-black font-headline text-error">24</span>
+<span class="text-error font-bold text-xs mb-1">+4 in 1hr</span>
+</div>
+</div>
+<div class="bg-white border border-surface-container p-6 rounded-lg atmospheric-shadow">
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-2">Risk Level</p>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-black font-headline text-error">Extreme</span>
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+</div>
+<div class="bg-white border border-surface-container p-6 rounded-lg atmospheric-shadow">
+<p class="text-xs font-label text-on-surface-variant uppercase tracking-widest mb-2">Spread Velocity</p>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-black font-headline text-primary">12.4</span>
+<span class="text-on-surface-variant text-xs mb-1 font-bold">km/h</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: GIS Map Preview -->
+<div class="lg:col-span-5 h-full min-h-[500px]">
+<div class="bg-white border border-surface-container rounded-xl h-full relative overflow-hidden atmospheric-shadow p-2">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover rounded-lg opacity-90" data-alt="A top-down satellite view of a forest region with heat map overlays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDghjmL5KF3TBw2xcmLwlglxTuj2fpzFs8pR8F4DlX_Wtgp-LNBbshO55iFphbU6-kqqeej_KLSuWosgrZ6EwmVNbDzdBGKYD0gV5NFPPG8CK4ve7NdHD_aFTsX-IRU5bXjnA6mAJ9qRbacE8nrcq53fCG-m6sc8pUJxiUYFzg-K_-jWehu7fyNobzwXdsBgy_PQnD_D6yz1SONEJNU7SH8ef_P8hf9Wq3dgCNKj1u27gJ2HbjoIw3BZdpSqhBy8XNyM08GnHAMJ8Zo"/>
+</div>
+<div class="relative z-10 p-6 flex flex-col h-full pointer-events-none">
+<div class="bg-white/90 backdrop-blur-md p-4 rounded-xl inline-block self-start border border-outline-variant shadow-sm pointer-events-auto">
+<h4 class="text-sm font-bold flex items-center gap-2 text-on-surface">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+                                        GIS Visualization Alpha-7
+                                    </h4>
+<p class="text-[10px] text-on-surface-variant mt-1 uppercase tracking-tighter font-bold">Lat: 34.0522° N | Long: 118.2437° W</p>
+</div>
+<div class="mt-auto pointer-events-auto">
+<div class="bg-white/90 backdrop-blur-md p-4 rounded-xl border border-outline-variant shadow-sm space-y-3">
+<div class="flex justify-between items-center text-xs">
+<span class="text-on-surface-variant font-bold">Layer Opacity</span>
+<span class="text-primary font-bold">85%</span>
+</div>
+<div class="h-1.5 bg-surface-container-highest rounded-full">
+<div class="h-full bg-primary rounded-full w-[85%]"></div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-surface-container-high rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container transition-colors text-on-surface">Toggle Heatmap</button>
+<button class="flex-1 py-2 bg-surface-container-high rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container transition-colors text-on-surface">Wind Vectors</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Resource Allocation Module -->
+<section class="bg-white border border-surface-container rounded-xl p-8 atmospheric-shadow">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-12 h-12 bg-primary-container/20 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="hail">hail</span>
+</div>
+<div>
+<h2 class="text-2xl font-extrabold font-headline text-on-surface">Dynamic Resource Allocation</h2>
+<p class="text-sm text-on-surface-variant font-label">Optimize personnel and equipment based on real-time threat analysis.</p>
+</div>
+</div>
+<div class="col-span-full mb-8 h-[300px] w-full bg-surface-container rounded-xl overflow-hidden relative border border-outline-variant">
+<div class="w-full h-full" id="resource-map"></div>
+<div class="absolute top-4 left-4 bg-white/90 backdrop-blur-md p-4 rounded-lg border border-outline-variant z-10 shadow-sm">
+<h4 class="text-xs font-bold text-on-surface mb-3 uppercase tracking-widest">Resource Distribution</h4>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+<span class="text-[10px] text-on-surface-variant font-bold">Relief Teams</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-sky-500"></span>
+<span class="text-[10px] text-on-surface-variant font-bold">Medics</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2.5 h-2.5 rounded-full bg-error"></span>
+<span class="text-[10px] text-on-surface-variant font-bold">Aerial Support</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-4 right-4 z-10">
+<span class="px-3 py-1 bg-error-container text-on-error-container border border-error/20 rounded text-[10px] font-bold shadow-sm">FIRE INTENSITY OVERLAY ACTIVE</span>
+</div>
+<img class="absolute inset-0 w-full h-full object-cover -z-10 opacity-30 grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDghjmL5KF3TBw2xcmLwlglxTuj2fpzFs8pR8F4DlX_Wtgp-LNBbshO55iFphbU6-kqqeej_KLSuWosgrZ6EwmVNbDzdBGKYD0gV5NFPPG8CK4ve7NdHD_aFTsX-IRU5bXjnA6mAJ9qRbacE8nrcq53fCG-m6sc8pUJxiUYFzg-K_-jWehu7fyNobzwXdsBgy_PQnD_D6yz1SONEJNU7SH8ef_P8hf9Wq3dgCNKj1u27gJ2HbjoIw3BZdpSqhBy8XNyM08GnHAMJ8Zo"/>
+</div><div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<!-- Relief Teams -->
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-bold text-on-surface">Relief Teams</label>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">14 Active</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">
+<span>0 Deployment</span>
+<span>50 Limit</span>
+</div>
+</div>
+<!-- Ambulances -->
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-bold text-on-surface">Emergency Medics</label>
+<span class="bg-primary/10 text-primary px-3 py-1 rounded-full text-xs font-bold">8 Ready</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">
+<span>Static Base</span>
+<span>High Alert</span>
+</div>
+</div>
+<!-- Helicopters -->
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-bold text-on-surface">Aerial Support</label>
+<span class="bg-error-container text-on-error-container px-3 py-1 rounded-full text-xs font-bold">3 In-Air</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-[10px] text-on-surface-variant uppercase tracking-widest font-bold">
+<span>Standby</span>
+<span>Max Sortie</span>
+</div>
+</div>
+</div>
+<div class="mt-12 flex flex-wrap gap-4 items-center justify-between border-t border-surface-container pt-8">
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-xs text-on-surface-variant font-medium">Staging Area 1: San Gabriel</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-error"></div>
+<span class="text-xs text-on-surface-variant font-medium">Incident Point: Topanga</span>
+</div>
+</div>
+<button class="bg-surface-container-highest text-on-surface px-8 py-3 rounded-full text-sm font-bold hover:bg-primary-container hover:text-on-primary-container transition-all duration-300">Execute Allocation Plan</button>
+</div>
+</section>
+<!-- Safety Measures & Helplines -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-white border border-surface-container rounded-xl p-8 atmospheric-shadow border-l-4 border-error">
+<h3 class="text-xl font-extrabold font-headline mb-6 flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-error" data-icon="health_and_safety">health_and_safety</span>
+                            Immediate Safety Protocol
+                        </h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-4">
+<span class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px] font-bold text-on-surface flex-shrink-0 mt-1">01</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Seal all windows and ventilation systems. Use damp cloths to block gaps in doors to prevent smoke inhalation.</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px] font-bold text-on-surface flex-shrink-0 mt-1">02</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Evacuate immediately if within 5 miles of an active red-zone. Follow the North-East escape route toward Sector 4.</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="w-6 h-6 bg-surface-container-highest rounded-full flex items-center justify-center text-[10px] font-bold text-on-surface flex-shrink-0 mt-1">03</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Maintain emergency radio contact on Frequency 144.50 MHz for real-time wind shift updates.</p>
+</li>
+</ul>
+</div>
+<div class="bg-white border border-surface-container rounded-xl p-8 atmospheric-shadow">
+<h3 class="text-xl font-extrabold font-headline mb-6 flex items-center gap-2 text-on-surface">
+<span class="material-symbols-outlined text-primary" data-icon="support_agent">support_agent</span>
+                            Regional Support Network
+                        </h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container-low border border-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1">Emergency Operations</p>
+<p class="text-lg font-bold text-on-surface">+1-800-FIRE-OPS</p>
+</div>
+<div class="p-4 bg-surface-container-low border border-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1">Medical Dispatch</p>
+<p class="text-lg font-bold text-on-surface">+1-800-MED-EVAC</p>
+</div>
+<div class="p-4 bg-surface-container-low border border-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1">Red Cross Shelters</p>
+<p class="text-lg font-bold text-on-surface">SMS 'SHELTER' to 433</p>
+</div>
+<div class="p-4 bg-surface-container-low border border-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-bold mb-1">Civilian Hotline</p>
+<p class="text-lg font-bold text-on-surface">911 (Emergency ONLY)</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 rounded-t-[3rem] mt-auto bg-white border-t border-surface-container flex flex-col items-center justify-center gap-4">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-bold text-on-surface">SATARK: Editorial Resilience Disaster Systems</span>
+<div class="w-1.5 h-1.5 bg-primary rounded-full"></div>
+<span class="text-on-surface-variant text-xs font-medium">v2.4.0-Stable</span>
+</div>
+<div class="flex gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm underline decoration-primary/30 underline-offset-4 font-medium" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm underline decoration-primary/30 underline-offset-4 font-medium" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm underline decoration-primary/30 underline-offset-4 font-medium" href="#">Contact Support</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors text-sm underline decoration-primary/30 underline-offset-4 font-medium" href="#">Global GIS Standards</a>
+</div>
+<p class="text-on-surface-variant text-xs font-body leading-relaxed mt-4">© 2024 Editorial Resilience Disaster Systems. All Rights Reserved.</p>
+</footer>
+</body></html>

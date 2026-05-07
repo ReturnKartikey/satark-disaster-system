@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+.venv
+venv/
+ENV/
+
+# Large Model Weights (GitHub limit is 100MB)
+*.pth
+*.h5
+*.weights
+*.ckpt
+
+# Datasets / Large Data
+cyclone/
+flood/
+wildfire2/
+flood2/
+FloodNet Challenge/
+cyclone test data/
+flood test data/
+wildfire test data/
+cyclone test results/
+flood test results/
+wildfire test results/
+train/
+valid/
+heatmaps/
+
+# Logs and temporary files
+*.log
+err.txt
+inspect_output.txt
+*.png
+*.txt
+!requirements.txt
+!README.md
+!cyclone_final_metrics.txt
+!flood2_metrics.txt
+!wildfire2_metrics.txt
+
+# OS files
+.DS_Store
+Thumbs.db

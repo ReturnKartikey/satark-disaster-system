@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SATARK: A Disaster Management and Mitigation System</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#93000a",
+                    "on-secondary": "#2d3135",
+                    "on-primary": "#003354",
+                    "surface-container-low": "#1a1c1e",
+                    "surface-tint": "#98cbff",
+                    "on-secondary-fixed": "#181c20",
+                    "on-tertiary-fixed": "#410004",
+                    "inverse-surface": "#e2e2e5",
+                    "tertiary-fixed": "#ffdad7",
+                    "inverse-on-surface": "#2f3133",
+                    "tertiary": "#ffb3ae",
+                    "surface-variant": "#333537",
+                    "on-error-container": "#ffdad6",
+                    "on-surface": "#e2e2e5",
+                    "on-tertiary-container": "#ffccc8",
+                    "primary-fixed-dim": "#98cbff",
+                    "secondary": "#c3c7cc",
+                    "secondary-container": "#484c50",
+                    "outline-variant": "#40484f",
+                    "primary-fixed": "#cfe5ff",
+                    "background": "#121416",
+                    "primary-container": "#00629d",
+                    "outline": "#8a919a",
+                    "surface-container-high": "#282a2c",
+                    "on-primary-fixed": "#001d33",
+                    "on-error": "#690005",
+                    "on-secondary-container": "#b9bcc1",
+                    "tertiary-fixed-dim": "#ffb3ae",
+                    "inverse-primary": "#00629d",
+                    "on-primary-container": "#bcdcff",
+                    "surface-container-highest": "#333537",
+                    "surface": "#121416",
+                    "on-surface-variant": "#c0c7d0",
+                    "tertiary-container": "#ba1723",
+                    "secondary-fixed": "#e0e3e8",
+                    "on-primary-fixed-variant": "#004a77",
+                    "error": "#ffb4ab",
+                    "primary": "#98cbff",
+                    "on-tertiary": "#68000b",
+                    "on-tertiary-fixed-variant": "#930014",
+                    "surface-container": "#1e2022",
+                    "surface-dim": "#121416",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "on-background": "#e2e2e5",
+                    "surface-bright": "#37393b",
+                    "surface-container-lowest": "#0c0e10",
+                    "on-secondary-fixed-variant": "#43474b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .atmospheric-shadow {
+            box-shadow: 0px 20px 40px rgba(226, 226, 229, 0.04);
+        }
+        .liquid-container {
+            clip-path: circle(75% at 50% 50%);
+        }
+        body {
+            background-color: #121416;
+            color: #e2e2e5;
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+</head>
+<body class="selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-900/70 backdrop-blur-xl flex justify-between items-center px-8 h-16">
+<div class="text-xl font-bold tracking-tight text-slate-100 font-headline">SATARK</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="#">Monitoring</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="#">Resources</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="#">Safety</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-4">
+<div class="flex gap-2"><button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-all duration-300" onclick="const isDark = document.documentElement.classList.toggle('dark'); this.querySelector('span').textContent = isDark ? 'light_mode' : 'dark_mode';">
+<span class="material-symbols-outlined" data-icon="light_mode">light_mode</span>
+</button>
+<button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+<img alt="Crisis Operator Profile" class="w-8 h-8 rounded-full bg-surface-variant p-0.5" data-alt="close up of a professional emergency dispatch operator profile picture with subtle blue rim lighting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBxzikCUioxsAx8MRhiFrSR8zk73PMCVu3HPDEx8PM79DO9V8yNsvChQBuOCf0z1uaIjzJg3qIZGsiLqfxVkvNxSByfZl-drN2ilWHSPw3pyEmjP644EBKojcaROhmR2ddKtKwq-g6vo2JgQPsZfPMCHmlxpjnGNTTIJ0XlQglR8_4Z0_XgK-IY7FHiSLPuX9xlCoOKtuX0qoT5En8nQwuaqQP34TMgG1a9oTuQZnGwyRlL3gFHZXUYZMfsSYwqVP4oiYKoa2tscPy4"/>
+</div>
+</header>
+<main class="pt-16">
+<!-- Hero Section: The Sentinel -->
+<section class="relative min-height-[921px] flex flex-col items-center justify-center px-6 py-24 overflow-hidden">
+<div class="absolute inset-0 z-0 opacity-40">
+<img class="w-full h-full object-cover grayscale" data-alt="vast cinematic aerial view of a misty mountain range at dawn with soft ethereal blue light filtering through fog" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWM3CUtTNb0RoQ-Y3m0OEqxWPAnZZxo9p8QeaM5Q6UeDH8RCkLU-ENAaIP0y5VlRo3kcRdd_yvLOtVXtnoxYhImdwiWbqqgC9y_jtwvxkvx8idknMyKZSPnfrbwZFuVdpORpYqUPC-K5j4hD1keToLQ1ct3V660Gq_ppGpst58JLI2Gre4PgO1PyFInWU_3EcImb49AqrOZw17HyziMFXoWG3c5mHPaU3F9jv-ywYQxjdffVPcqYC13ZdIdpQ-gpt6-m3LCh7m-hQr"/>
+<div class="absolute inset-0 bg-gradient-to-b from-background via-background/60 to-background"></div>
+</div>
+<div class="relative z-10 text-center max-w-4xl mx-auto space-y-8">
+<div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high text-primary font-label text-xs tracking-wider uppercase">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    Live Satellite Intelligence
+                </div>
+<h1 class="font-headline text-6xl md:text-8xl font-extrabold tracking-tighter text-on-surface leading-none text-4xl md:text-7xl">SATARK: A Disaster Management and Mitigation System</h1>
+<p class="font-body text-lg md:text-xl text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
+                    Complex ML and GIS data transformed into a soft, curated narrative for high-stakes crisis response. Authority through clarity.
+                </p>
+<div class="flex flex-wrap justify-center gap-4 pt-4">
+<button class="bg-gradient-to-br from-primary to-primary-container text-on-primary px-8 py-4 rounded-xl font-headline font-bold text-lg hover:scale-102 transition-all duration-300 atmospheric-shadow">
+                        Emergency Dispatch
+                    </button>
+<button class="bg-surface-container-highest text-on-surface px-8 py-4 rounded-xl font-headline font-medium text-lg hover:scale-102 transition-all duration-300">
+                        View Global GIS
+                    </button>
+</div>
+</div>
+<!-- Sub-headings Links (Asymmetric Layout) -->
+<div class="relative z-10 mt-24 grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl mx-auto px-4">
+<a class="group relative p-8 rounded-xl bg-surface-container-low hover:bg-surface-container hover:scale-102 transition-all duration-300" href="../flood_analysis_resource_mapping_dark_updated_nav/code.html">
+<span class="material-symbols-outlined text-primary text-4xl mb-4" data-icon="tsunami">tsunami</span>
+<h3 class="font-headline text-xl font-bold mb-2">Flood Detection</h3>
+<p class="font-body text-sm text-on-surface-variant">Real-time river gauge analysis and urban inundation mapping.</p>
+</a>
+<a class="group relative p-8 rounded-xl bg-surface-container-low hover:bg-surface-container hover:scale-102 transition-all duration-300 mt-0 md:-mt-8" href="../wildfire_tracking_resource_mapping_dark/code.html">
+<span class="material-symbols-outlined text-tertiary text-4xl mb-4" data-icon="local_fire_department">local_fire_department</span>
+<h3 class="font-headline text-xl font-bold mb-2">Wildfire Tracking</h3>
+<p class="font-body text-sm text-on-surface-variant">Thermal anomaly identification and spread prediction modeling.</p>
+</a>
+<a class="group relative p-8 rounded-xl bg-surface-container-low hover:bg-surface-container hover:scale-102 transition-all duration-300" href="../cyclone_path_resource_mapping_dark/code.html">
+<span class="material-symbols-outlined text-secondary text-4xl mb-4" data-icon="cyclone">cyclone</span>
+<h3 class="font-headline text-xl font-bold mb-2">Cyclone Paths</h3>
+<p class="font-body text-sm text-on-surface-variant">Predictive trajectory analysis with multi-agency data fusion.</p>
+</a>
+</div>
+</section>
+<!-- Active Monitoring: The Map Stack -->
+<section class="py-24 px-6 md:px-12 bg-surface">
+<div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+<div class="lg:col-span-7 relative h-[600px] rounded-xl overflow-hidden atmospheric-shadow border border-outline-variant/15">
+<img class="w-full h-full object-cover" data-alt="dark satellite map of a coastal city at night with glowing data overlays showing heat patterns and traffic flow" data-location="Global" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNKIqXwDWX8jfZkfWpLyg5QzG5x6l3p6buwP_VNAXx-1PX-VOqs-CaujS2vjZoFdO1FoDJulGNLa_xUA5pmfwgeqqyBClcC2OXyTXz5ctYoRAIWLKySMfeRj-4qXULvuyibiov9tdlu4tPLdbNYBlAImvb3Tdq9sSPDXUXNl-Nf1ep3yfMdxuQA8Oo4-xlS_5gy2Bk0wBKcgrqfeVg__qRQtUTUWLoIEGbH0akYm9q6h4rXBWWwzHq9-7ZCAHi8SeKkM-SLIY4n2Qd"/>
+<!-- Floating HUD -->
+<div class="absolute top-6 left-6 right-6 flex justify-between items-start">
+<div class="bg-surface/70 backdrop-blur-xl p-4 rounded-lg atmospheric-shadow">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="map">map</span>
+</div>
+<div>
+<div class="font-headline text-sm font-bold">SATARK Hub</div>
+<div class="font-body text-xs text-on-surface-variant">Active Monitoring</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="bg-error-container/80 backdrop-blur-xl px-4 py-2 rounded-full flex items-center gap-2 text-on-error-container">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+<span class="font-label text-xs font-bold uppercase tracking-widest">Critical Alert</span>
+</div>
+</div>
+</div>
+<!-- Recessed Data Card -->
+<div class="absolute bottom-6 left-6 right-6 bg-surface-container-lowest/80 backdrop-blur-xl p-6 rounded-lg flex items-center justify-between">
+<div class="space-y-1">
+<div class="font-label text-xs text-on-surface-variant uppercase tracking-widest">Detected Anomalies</div>
+<div class="font-headline text-2xl font-bold">42 Active Sites</div>
+</div>
+<button class="bg-surface-container-high hover:bg-surface-container-highest px-6 py-2 rounded-full text-sm font-bold transition-all">Details</button>
+</div>
+</div>
+<div class="lg:col-span-5 space-y-12">
+<div class="space-y-4">
+<h2 class="font-headline text-4xl font-extrabold text-on-surface leading-tight">Precision Monitoring via Editorial Logic</h2>
+<p class="font-body text-lg text-on-surface-variant leading-relaxed">
+                            We don't just dump data; we curate narrative clarity. Our GIS engine layers atmospheric vellum over topological insights, ensuring decision-makers see truth, not noise.
+                        </p>
+</div>
+<div class="space-y-6">
+<div class="flex items-start gap-4">
+<div class="p-3 rounded-xl bg-surface-container-high text-primary">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<div>
+<h4 class="font-headline text-lg font-bold">ML Insights</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">Proprietary algorithms that predict failure points in infrastructure before they occur.</p>
+</div>
+</div>
+<div class="flex items-start gap-4">
+<div class="p-3 rounded-xl bg-surface-container-high text-tertiary">
+<span class="material-symbols-outlined" data-icon="heatmaps">map</span>
+</div>
+<div>
+<h4 class="font-headline text-lg font-bold">Heatmaps</h4>
+<p class="font-body text-sm text-on-surface-variant leading-relaxed">Multi-spectral thermal rendering for rapid wildfire containment strategies.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works: The Bento Layout -->
+<section class="py-24 px-6 md:px-12 bg-surface-container-low">
+<div class="max-w-7xl mx-auto">
+<div class="text-center mb-16 space-y-4">
+<h2 class="font-headline text-5xl font-extrabold tracking-tight">The Data Narrative</h2>
+<p class="font-body text-on-surface-variant max-w-xl mx-auto">How the SATARK architecture transforms chaos into coordinated response.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 grid-rows-2 gap-6 h-auto md:h-[600px]">
+<div class="md:col-span-2 md:row-span-2 bg-surface-container rounded-xl p-10 flex flex-col justify-end relative overflow-hidden group">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20 group-hover:scale-105 transition-transform duration-700" data-alt="complex digital network visualization with glowing nodes and lines on a dark background representing data flow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDDkpOZiv-yJlZ3yJcpqcGailx7qFP5nnhDuN2iQu-Nk-6bWpFLfQAHEGmBbuN5n4McvvNQTxprDBL4Co83Twz2IjYqtRYNfPWLUslv57HrHR4660kpTwCCE0F6uaKorO7ywr3GTonh5K14NWcv-lhz7QzNOEndO6UMEN5jecVd3lXSXsgDNPAVGD8hN3KqFdaC2LHHF5OJ30cvIoL7NT08vUUpR90Qt2G1g-VAbk1NQq61q200mQajq46C-BsZpmybF23M0UIDBInW"/>
+<div class="relative z-10 space-y-4">
+<span class="font-label text-xs text-primary uppercase font-bold">Phase 01</span>
+<h3 class="font-headline text-3xl font-bold">Deep GIS Ingestion</h3>
+<p class="font-body text-on-surface-variant leading-relaxed">How the SATARK architecture transforms chaos into coordinated response.</p>
+</div>
+</div>
+<div class="md:col-span-2 bg-surface-container rounded-xl p-10 flex items-center gap-8 border-l-4 border-primary">
+<div class="space-y-2">
+<span class="font-label text-xs text-primary uppercase font-bold">Phase 02</span>
+<h3 class="font-headline text-2xl font-bold">ML Refinement</h3>
+<p class="font-body text-sm text-on-surface-variant">How the SATARK architecture transforms chaos into coordinated response.</p>
+</div>
+<div class="hidden sm:block text-primary/20">
+<span class="material-symbols-outlined text-8xl" data-icon="psychology">psychology</span>
+</div>
+</div>
+<div class="md:col-span-1 bg-surface-container rounded-xl p-8 flex flex-col justify-between">
+<span class="material-symbols-outlined text-primary text-4xl" data-icon="menu_book">menu_book</span>
+<div class="space-y-1">
+<h4 class="font-headline font-bold">Editorial View</h4>
+<p class="font-body text-xs text-on-surface-variant">How the SATARK architecture transforms chaos into coordinated response.</p>
+</div>
+</div>
+<div class="md:col-span-1 bg-primary text-on-primary rounded-xl p-8 flex flex-col justify-between atmospheric-shadow">
+<span class="material-symbols-outlined text-4xl" data-icon="phone_in_talk">phone_in_talk</span>
+<div class="space-y-1">
+<h4 class="font-headline font-bold">Live Dispatch</h4>
+<p class="font-body text-xs text-on-primary/80">How the SATARK architecture transforms chaos into coordinated response.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- CTA Section -->
+<section class="py-24 px-6 md:px-12">
+<div class="max-w-5xl mx-auto bg-gradient-to-br from-primary-container to-surface-container-highest p-12 md:p-20 rounded-xl text-center space-y-8 atmospheric-shadow border border-outline-variant/15">
+<h2 class="font-headline text-4xl md:text-6xl font-extrabold tracking-tighter leading-none">Ready to bolster your resilience?</h2>
+<p class="font-body text-lg text-on-primary-container max-w-2xl mx-auto">Join the global network of agencies using SATARK to protect communities and infrastructure.</p>
+<div class="flex flex-wrap justify-center gap-4">
+<button class="bg-primary text-on-primary px-10 py-4 rounded-xl font-headline font-bold hover:scale-105 transition-all">Request Agency Access</button>
+<button class="bg-surface/30 backdrop-blur-md text-on-surface border border-outline-variant/30 px-10 py-4 rounded-xl font-headline font-bold hover:scale-105 transition-all">Documentation</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 rounded-t-xl mt-auto bg-slate-950 flex flex-col items-center justify-center gap-4">
+<div class="font-bold text-slate-200 font-headline">SATARK: A Disaster Management and Mitigation System</div>
+<div class="flex flex-wrap justify-center gap-8 py-4">
+<a class="text-slate-500 hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500 font-body text-sm" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500 font-body text-sm" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500 font-body text-sm" href="#">Contact Support</a>
+<a class="text-slate-500 hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500 font-body text-sm" href="#">Global GIS Standards</a>
+</div>
+<div class="text-slate-500 font-body text-xs mt-4">© 2024 SATARK Disaster Systems. All Rights Reserved.</div>
+</footer>
+<!-- SideNavBar (Hidden on desktop as per Shell Visibility rules, but implemented for mobile/context) -->
+<div class="fixed left-0 top-0 h-full w-64 bg-slate-950 rounded-r-xl flex flex-col py-6 transform -translate-x-full md:hidden transition-transform duration-500 z-[60]">
+<div class="px-6 mb-10 flex items-center gap-3">
+<img alt="Agency Logo" class="w-10 h-10 rounded-full" data-alt="minimalist agency logo with abstract geometric lines and soft blue accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAoD-kJ-G84Y2ce0-LC3Olyd21Nm6XNgPTDNYHdl9-3SueVvEXD9gDKFeQU1AAYiZO0Dq3M1wcgZf59ENsilN5WqoFU1AjWnzPnJ4IWbGIQL0750KkFVw_cFOAbduHemDcNHvJgJSlkJ539mXDA-yxdNPX3CWrLVx4brJTltp6N1-e8qVPol4ek_XE2LInvNsvv9SjqyL5ow4jOFIq-SkyVawdplPTgzpTnB7e-U_MRRDyevBiWHmXH6HrwBGM4uTqHA6GHDhaKqvkm"/>
+<div>
+<div class="text-lg font-black text-slate-100 font-headline">SATARK Hub</div>
+<div class="text-[10px] text-sky-400 font-label uppercase tracking-widest">Active Monitoring</div>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="bg-sky-500/10 text-sky-400 rounded-full mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label" href="../flood_analysis_resource_mapping_dark_updated_nav/code.html">
+<span class="material-symbols-outlined" data-icon="tsunami">tsunami</span> Flood Analysis
+            </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label transition-all" href="../wildfire_tracking_resource_mapping_dark/code.html">
+<span class="material-symbols-outlined" data-icon="local_fire_department">local_fire_department</span> Wildfire Tracking
+            </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label transition-all" href="../cyclone_path_resource_mapping_dark/code.html">
+<span class="material-symbols-outlined" data-icon="cyclone">cyclone</span> Cyclone Path
+            </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="psychology">psychology</span> ML Insights
+            </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label transition-all" href="#">
+<span class="material-symbols-outlined" data-icon="map">map</span> Heatmaps
+            </a>
+</nav>
+<div class="mt-auto px-2 space-y-1 border-t border-slate-800/50 pt-4">
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="phone_in_talk">phone_in_talk</span> Help Line
+            </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label text-sm" href="#">
+<span class="material-symbols-outlined" data-icon="menu_book">menu_book</span> Documentation
+            </a>
+</div>
+</div>
+</body></html>

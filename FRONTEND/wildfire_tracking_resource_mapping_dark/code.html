@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&amp;family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#ffb3ae",
+                    "inverse-surface": "#e2e2e5",
+                    "on-tertiary-container": "#ffccc8",
+                    "primary-fixed": "#cfe5ff",
+                    "on-error": "#690005",
+                    "on-primary-fixed": "#001d33",
+                    "surface": "#121416",
+                    "tertiary-container": "#ba1723",
+                    "on-surface-variant": "#c0c7d0",
+                    "on-primary-container": "#bcdcff",
+                    "surface-tint": "#98cbff",
+                    "on-tertiary": "#68000b",
+                    "on-tertiary-fixed": "#410004",
+                    "tertiary-fixed-dim": "#ffb3ae",
+                    "inverse-on-surface": "#2f3133",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-dim": "#121416",
+                    "surface-container-lowest": "#0c0e10",
+                    "on-secondary-container": "#b9bcc1",
+                    "surface-container-highest": "#333537",
+                    "on-secondary": "#2d3135",
+                    "on-primary": "#003354",
+                    "secondary": "#c3c7cc",
+                    "error": "#ffb4ab",
+                    "error-container": "#93000a",
+                    "on-primary-fixed-variant": "#004a77",
+                    "primary-fixed-dim": "#98cbff",
+                    "on-tertiary-fixed-variant": "#930014",
+                    "surface-container": "#1e2022",
+                    "primary": "#98cbff",
+                    "outline-variant": "#40484f",
+                    "on-error-container": "#ffdad6",
+                    "surface-bright": "#37393b",
+                    "primary-container": "#00629d",
+                    "surface-container-low": "#1a1c1e",
+                    "surface-container-high": "#282a2c",
+                    "inverse-primary": "#00629d",
+                    "background": "#121416",
+                    "surface-variant": "#333537",
+                    "on-surface": "#e2e2e5",
+                    "on-secondary-fixed": "#181c20",
+                    "secondary-fixed": "#e0e3e8",
+                    "outline": "#8a919a",
+                    "secondary-fixed-dim": "#c3c7cc",
+                    "secondary-container": "#484c50",
+                    "on-background": "#e2e2e5",
+                    "on-secondary-fixed-variant": "#43474b"
+            },
+            "borderRadius": {
+                    "DEFAULT": "1rem",
+                    "lg": "2rem",
+                    "xl": "3rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "display": ["Manrope"],
+                    "body": ["Inter"],
+                    "label": ["Plus Jakarta Sans"]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .bg-gradient-primary {
+            background: linear-gradient(135deg, #98cbff 0%, #00629d 100%);
+        }
+        .atmospheric-shadow {
+            box-shadow: 0px 20px 40px rgba(226, 226, 229, 0.04);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body selection:bg-primary/30">
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 w-full z-50 flex justify-between items-center px-8 h-16 w-full bg-slate-900/70 backdrop-blur-xl transition-all duration-300">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-slate-100 font-headline uppercase">SATARK: Editorial Resilience</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-400 hover:text-slate-200 transition-colors text-sm font-label" href="#">Monitoring</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors text-sm font-label" href="#">Resources</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors text-sm font-label" href="#">Safety</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors text-sm font-label" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-4">
+<button aria-label="Toggle Theme" class="p-2 hover:bg-slate-800/50 rounded-full transition-all duration-300 text-sky-400 group">
+<span class="material-symbols-outlined group-hover:rotate-45 transition-transform duration-300" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="p-2 hover:bg-slate-800/50 rounded-full transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-slate-800/50 rounded-full transition-all duration-300">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-outline-variant/30 ml-2">
+<img alt="Crisis Operator Profile" class="w-full h-full object-cover" data-alt="A focused crisis management operator in a dimly lit high-tech control room environment. Soft blue ambient lighting from multiple screens reflects on his face, creating a professional and urgent mood. The background shows blurred data visualizations and maps in a sophisticated dark-mode aesthetic with deep charcoal and slate tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCNstQ_XwNYqUXHOr7untHizzRxVhbXoU4l_2OGgItukTAabTUPnRDKC6nW0RCfk2t-c3znB3lkz9-C71Mnf_SWKz6PFCMsVuhb6oYG2LH5TtCZbd_jlXGKwCWztDMLb4m8rwrOalYGCsdMloQv1yFA8zsbi6MYpAtMUGn26sHqFNIUFvw2Vj4JOMOgrU8P_PNDmxRPIAna6pQ_0oHdyZGBEQ8fbVX-ytWMF3GEOu89Pj2pfjoF2KA121y2czeK3w2dN9ouaJ4zkY_V"/>
+</div>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- Side Navigation Rail -->
+<aside class="fixed left-0 h-[calc(100vh-4rem)] w-64 bg-slate-950 flex flex-col py-6 rounded-r-[3rem] z-40">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 bg-primary-container rounded-xl flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="shield">shield</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-slate-100 font-headline leading-tight">Sentinel Hub</h2>
+<p class="text-xs text-sky-400 font-label tracking-wide">Active Monitoring</p>
+</div>
+</div>
+</div>
+<div class="flex-1 space-y-1">
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-300 mx-2 my-1 transition-all duration-300 font-label group" href="../flood_analysis_resource_mapping_dark_updated_nav/code.html">
+<span class="material-symbols-outlined" data-icon="tsunami">tsunami</span>
+<span>Flood Analysis</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 bg-sky-500/10 text-sky-400 rounded-full mx-2 my-1 transition-all duration-300 font-label" href="#">
+<span class="material-symbols-outlined" data-icon="local_fire_department" style="font-variation-settings: 'FILL' 1;">local_fire_department</span>
+<span class="font-bold">Wildfire Tracking</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-300 mx-2 my-1 transition-all duration-300 font-label group" href="../cyclone_path_resource_mapping_dark/code.html">
+<span class="material-symbols-outlined" data-icon="cyclone">cyclone</span>
+<span>Cyclone Path</span>
+</a>
+<a class="flex items-center gap-4 px-6 py-3 text-slate-500 hover:text-slate-300 mx-2 my-1 transition-all duration-300 font-label group" href="../satark_landing_page_dark/code.html">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span>Home</span>
+</a>
+</div>
+<div class="px-4 mt-auto">
+<button class="w-full py-4 rounded-xl bg-gradient-primary text-on-primary font-bold shadow-lg hover:scale-[1.02] transition-all duration-300 mb-6 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="bolt">bolt</span>
+                    Emergency Dispatch
+                </button>
+<div class="space-y-1 pt-4 border-t border-slate-800/50">
+<a class="flex items-center gap-4 px-6 py-2 text-slate-500 hover:text-slate-300 transition-colors text-xs font-label" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="phone_in_talk">phone_in_talk</span>
+                        Help Line
+                    </a>
+<a class="flex items-center gap-4 px-6 py-2 text-slate-500 hover:text-slate-300 transition-colors text-xs font-label" href="#">
+<span class="material-symbols-outlined text-sm" data-icon="menu_book">menu_book</span>
+                        Documentation
+                    </a>
+</div>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 ml-64 p-8">
+<div class="max-w-7xl mx-auto space-y-8">
+<!-- Hero / Detection Section -->
+<section class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+<!-- Left: Upload & Analysis -->
+<div class="lg:col-span-7 space-y-6">
+<div class="bg-surface-container-low rounded-xl p-8 atmospheric-shadow relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-4">
+<span class="px-3 py-1 bg-tertiary-container text-on-tertiary-container rounded-full text-xs font-bold font-label animate-pulse">LIVE DETECTION</span>
+</div>
+<h1 class="text-4xl font-extrabold font-headline mb-4 tracking-tight">Active Fire Detection</h1>
+<p class="text-on-surface-variant max-w-xl mb-8 leading-relaxed">Utilize real-time satellite imagery and ground-level vision models to identify active thermal anomalies and fire vectors.</p>
+<div id="wildfire-upload-zone" class="border-2 border-dashed border-outline-variant/30 rounded-xl p-12 flex flex-col items-center justify-center text-center hover:bg-surface-container transition-all duration-300 cursor-pointer" onclick="document.getElementById('wildfire-file-input').click()">
+<input type="file" id="wildfire-file-input" accept="image/*" class="hidden" />
+<div class="w-16 h-16 bg-surface-container-highest rounded-full flex items-center justify-center mb-4 text-primary">
+<span class="material-symbols-outlined text-3xl" data-icon="cloud_upload">cloud_upload</span>
+</div>
+<h3 class="text-lg font-bold mb-1">Upload Surveillance Feed</h3>
+<p class="text-sm text-slate-500">Drag imagery or connect IP Camera stream (RTSP/ONVIF)</p>
+</div>
+<!-- Image Preview -->
+<div id="wildfire-preview" class="hidden mt-4 rounded-lg overflow-hidden">
+<img id="wildfire-preview-img" class="w-full h-48 object-cover rounded-lg" />
+</div>
+<!-- ML Prediction Result -->
+<div id="wildfire-result" class="hidden mt-4">
+<div class="bg-surface-container-high p-6 rounded-xl border border-tertiary/30 atmospheric-shadow">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-tertiary">psychology</span>
+<h5 class="font-bold font-headline">ML Prediction Result</h5>
+</div>
+<div id="wildfire-loading" class="hidden flex items-center gap-3 py-4">
+<div class="w-5 h-5 border-2 border-tertiary border-t-transparent rounded-full animate-spin"></div>
+<span class="text-sm text-on-surface-variant">Analyzing image with ViT model...</span>
+</div>
+<div id="wildfire-result-content" class="hidden">
+<div class="flex items-center justify-between mb-3">
+<span class="text-xs text-on-surface-variant font-label uppercase tracking-widest">Classification</span>
+<span id="wildfire-result-class" class="text-lg font-extrabold font-headline"></span>
+</div>
+<div class="mb-2">
+<div class="flex justify-between text-xs font-label text-on-surface-variant mb-1">
+<span>CONFIDENCE</span>
+<span id="wildfire-result-confidence" class="text-tertiary"></span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div id="wildfire-result-bar" class="h-full bg-gradient-to-r from-tertiary to-red-400 transition-all duration-700" style="width:0%"></div>
+</div>
+</div>
+</div>
+<div id="wildfire-error" class="hidden text-error text-sm"></div>
+</div>
+</div>
+</div>
+<!-- ML Results Dashboard -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface-container-low p-6 rounded-lg atmospheric-shadow">
+<p class="text-xs font-label text-slate-400 uppercase tracking-widest mb-2">Active Hotspots</p>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-black font-headline text-tertiary">24</span>
+<span class="text-tertiary-container text-xs mb-1">+4 in 1hr</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg atmospheric-shadow">
+<p class="text-xs font-label text-slate-400 uppercase tracking-widest mb-2">Risk Level</p>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-black font-headline text-error">Extreme</span>
+<span class="material-symbols-outlined text-error" data-icon="warning">warning</span>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-lg atmospheric-shadow">
+<p class="text-xs font-label text-slate-400 uppercase tracking-widest mb-2">Spread Velocity</p>
+<div class="flex items-end justify-between">
+<span class="text-4xl font-black font-headline text-primary">12.4</span>
+<span class="text-slate-500 text-xs mb-1">km/h</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Right: GIS Map Preview -->
+<div class="lg:col-span-5 h-full min-h-[500px]">
+<div class="bg-surface-container-high rounded-xl h-full relative overflow-hidden atmospheric-shadow p-2">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover rounded-lg opacity-80" data-alt="A top-down satellite view of a dense forest region with glowing red and orange heat map overlays indicating active wildfire zones. The image uses a dark GIS aesthetic with glowing topographical lines and technical UI elements ghosted over the landscape. Muted charcoal and deep blue tones define the unburned areas, creating a high-contrast tactical overview." data-location="California Forest Reserves" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDghjmL5KF3TBw2xcmLwlglxTuj2fpzFs8pR8F4DlX_Wtgp-LNBbshO55iFphbU6-kqqeej_KLSuWosgrZ6EwmVNbDzdBGKYD0gV5NFPPG8CK4ve7NdHD_aFTsX-IRU5bXjnA6mAJ9qRbacE8nrcq53fCG-m6sc8pUJxiUYFzg-K_-jWehu7fyNobzwXdsBgy_PQnD_D6yz1SONEJNU7SH8ef_P8hf9Wq3dgCNKj1u27gJ2HbjoIw3BZdpSqhBy8XNyM08GnHAMJ8Zo"/>
+</div>
+<div class="relative z-10 p-6 flex flex-col h-full pointer-events-none">
+<div class="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl inline-block self-start border border-outline-variant/10 pointer-events-auto">
+<h4 class="text-sm font-bold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-error animate-ping"></span>
+                                        GIS Visualization Alpha-7
+                                    </h4>
+<p class="text-[10px] text-slate-400 mt-1 uppercase tracking-tighter">Lat: 34.0522° N | Long: 118.2437° W</p>
+</div>
+<div class="mt-auto pointer-events-auto">
+<div class="bg-slate-900/80 backdrop-blur-md p-4 rounded-xl border border-outline-variant/10 space-y-3">
+<div class="flex justify-between items-center text-xs">
+<span class="text-slate-300">Layer Opacity</span>
+<span class="text-sky-400">85%</span>
+</div>
+<div class="h-1 bg-slate-800 rounded-full">
+<div class="h-full bg-primary rounded-full w-[85%]"></div>
+</div>
+<div class="flex gap-2">
+<button class="flex-1 py-2 bg-surface-container-highest rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container transition-colors">Toggle Heatmap</button>
+<button class="flex-1 py-2 bg-surface-container-highest rounded-md text-[10px] font-bold uppercase tracking-widest hover:bg-primary-container transition-colors">Wind Vectors</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Resource Allocation Module -->
+<section class="bg-surface-container-low rounded-xl p-8 atmospheric-shadow">
+<div class="flex items-center gap-3 mb-8">
+<div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="hail">hail</span>
+</div>
+<div>
+<h2 class="text-2xl font-extrabold font-headline">Dynamic Resource Allocation</h2>
+<p class="text-sm text-slate-500 font-label">Optimize personnel and equipment based on real-time threat analysis.</p>
+</div>
+</div>
+<div class="col-span-full mb-8 h-[300px] w-full bg-surface-container-high rounded-xl overflow-hidden relative border border-outline-variant/10">
+<div class="w-full h-full opacity-60" id="resource-map"></div>
+<div class="absolute top-4 left-4 bg-slate-900/90 backdrop-blur-md p-3 rounded-lg border border-outline-variant/20 z-10">
+<h4 class="text-xs font-bold text-slate-100 mb-2 uppercase tracking-widest">Resource Distribution</h4>
+<div class="space-y-2">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="text-[10px] text-slate-400 font-bold">Relief Teams</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-sky-400"></span>
+<span class="text-[10px] text-slate-400 font-bold">Medics</span>
+</div>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="text-[10px] text-slate-400 font-bold">Aerial Support</span>
+</div>
+</div>
+</div>
+<div class="absolute bottom-4 right-4 z-10">
+<span class="px-2 py-1 bg-error/20 text-error border border-error/30 rounded text-[10px] font-bold">FIRE INTENSITY OVERLAY ACTIVE</span>
+</div>
+<!-- Placeholder background for the map until JS initializes -->
+<img class="absolute inset-0 w-full h-full object-cover -z-10 mix-blend-luminosity opacity-40" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDghjmL5KF3TBw2xcmLwlglxTuj2fpzFs8pR8F4DlX_Wtgp-LNBbshO55iFphbU6-kqqeej_KLSuWosgrZ6EwmVNbDzdBGKYD0gV5NFPPG8CK4ve7NdHD_aFTsX-IRU5bXjnA6mAJ9qRbacE8nrcq53fCG-m6sc8pUJxiUYFzg-K_-jWehu7fyNobzwXdsBgy_PQnD_D6yz1SONEJNU7SH8ef_P8hf9Wq3dgCNKj1u27gJ2HbjoIw3BZdpSqhBy8XNyM08GnHAMJ8Zo"/>
+</div><div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<!-- Relief Teams -->
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-bold text-slate-200">Relief Teams</label>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-xs font-bold">14 Active</span>
+</div>
+<input class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+<span>0 Deployment</span>
+<span>50 Limit</span>
+</div>
+</div>
+<!-- Ambulances -->
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-bold text-slate-200">Emergency Medics</label>
+<span class="bg-primary-container text-on-primary-container px-3 py-1 rounded-full text-xs font-bold">8 Ready</span>
+</div>
+<input class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+<span>Static Base</span>
+<span>High Alert</span>
+</div>
+</div>
+<!-- Helicopters -->
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-bold text-slate-200">Aerial Support</label>
+<span class="bg-tertiary-container text-on-tertiary-container px-3 py-1 rounded-full text-xs font-bold">3 In-Air</span>
+</div>
+<input class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-[10px] text-slate-500 uppercase tracking-widest font-bold">
+<span>Standby</span>
+<span>Max Sortie</span>
+</div>
+</div>
+</div>
+<div class="mt-12 flex flex-wrap gap-4 items-center justify-between border-t border-slate-800/50 pt-8">
+<div class="flex gap-4">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-primary"></div>
+<span class="text-xs text-slate-400">Staging Area 1: San Gabriel</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 rounded-full bg-tertiary"></div>
+<span class="text-xs text-slate-400">Incident Point: Topanga</span>
+</div>
+</div>
+<button class="bg-surface-container-highest px-8 py-3 rounded-full text-sm font-bold hover:scale-[1.02] transition-all duration-300">Execute Allocation Plan</button>
+</div>
+</section>
+<!-- Safety Measures & Helplines -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="bg-surface-container-low rounded-xl p-8 atmospheric-shadow border-l-4 border-error">
+<h3 class="text-xl font-extrabold font-headline mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-error" data-icon="health_and_safety">health_and_safety</span>
+                            Immediate Safety Protocol
+                        </h3>
+<ul class="space-y-4">
+<li class="flex items-start gap-4">
+<span class="w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-100 flex-shrink-0 mt-1">01</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Seal all windows and ventilation systems. Use damp cloths to block gaps in doors to prevent smoke inhalation.</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-100 flex-shrink-0 mt-1">02</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Evacuate immediately if within 5 miles of an active red-zone. Follow the North-East escape route toward Sector 4.</p>
+</li>
+<li class="flex items-start gap-4">
+<span class="w-6 h-6 bg-slate-800 rounded-full flex items-center justify-center text-[10px] font-bold text-slate-100 flex-shrink-0 mt-1">03</span>
+<p class="text-sm text-on-surface-variant leading-relaxed">Maintain emergency radio contact on Frequency 144.50 MHz for real-time wind shift updates.</p>
+</li>
+</ul>
+</div>
+<div class="bg-surface-container-low rounded-xl p-8 atmospheric-shadow">
+<h3 class="text-xl font-extrabold font-headline mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-sky-400" data-icon="support_agent">support_agent</span>
+                            Regional Support Network
+                        </h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Emergency Operations</p>
+<p class="text-lg font-bold text-slate-100">+1-800-FIRE-OPS</p>
+</div>
+<div class="p-4 bg-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Medical Dispatch</p>
+<p class="text-lg font-bold text-slate-100">+1-800-MED-EVAC</p>
+</div>
+<div class="p-4 bg-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Red Cross Shelters</p>
+<p class="text-lg font-bold text-slate-100">SMS 'SHELTER' to 433</p>
+</div>
+<div class="p-4 bg-surface-container rounded-lg group hover:bg-primary/5 transition-colors cursor-pointer">
+<p class="text-[10px] text-slate-500 uppercase tracking-widest font-bold mb-1">Civilian Hotline</p>
+<p class="text-lg font-bold text-slate-100">911 (Emergency ONLY)</p>
+</div>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="w-full py-12 rounded-t-[3rem] mt-auto bg-slate-950 flex flex-col items-center justify-center gap-4 w-full">
+<div class="flex items-center gap-2 mb-2">
+<span class="font-bold text-slate-200">SATARK: Editorial Resilience Disaster Systems</span>
+<div class="w-1.5 h-1.5 bg-sky-500 rounded-full"></div>
+<span class="text-slate-500 text-xs">v2.4.0-Stable</span>
+</div>
+<div class="flex gap-8">
+<a class="text-slate-500 hover:text-sky-400 transition-colors text-sm underline decoration-sky-500 underline-offset-4" href="#">Privacy Policy</a>
+<a class="text-slate-500 hover:text-sky-400 transition-colors text-sm underline decoration-sky-500 underline-offset-4" href="#">Terms of Service</a>
+<a class="text-slate-500 hover:text-sky-400 transition-colors text-sm underline decoration-sky-500 underline-offset-4" href="#">Contact Support</a>
+<a class="text-slate-500 hover:text-sky-400 transition-colors text-sm underline decoration-sky-500 underline-offset-4" href="#">Global GIS Standards</a>
+</div>
+<p class="text-slate-500 text-xs font-body leading-relaxed mt-4">© 2024 Editorial Resilience Disaster Systems. All Rights Reserved.</p>
+</footer>
+<script>
+  const API_BASE = 'http://localhost:5000';
+
+  const wfInput = document.getElementById('wildfire-file-input');
+  const wfPreview = document.getElementById('wildfire-preview');
+  const wfPreviewImg = document.getElementById('wildfire-preview-img');
+  const wfResult = document.getElementById('wildfire-result');
+  const wfLoading = document.getElementById('wildfire-loading');
+  const wfResultContent = document.getElementById('wildfire-result-content');
+  const wfResultClass = document.getElementById('wildfire-result-class');
+  const wfResultConfidence = document.getElementById('wildfire-result-confidence');
+  const wfResultBar = document.getElementById('wildfire-result-bar');
+  const wfError = document.getElementById('wildfire-error');
+
+  wfInput.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      wfPreviewImg.src = ev.target.result;
+      wfPreview.classList.remove('hidden');
+    };
+    reader.readAsDataURL(file);
+
+    wfResult.classList.remove('hidden');
+    wfLoading.classList.remove('hidden');
+    wfResultContent.classList.add('hidden');
+    wfError.classList.add('hidden');
+
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
+      const res = await fetch(`${API_BASE}/api/predict/wildfire`, {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await res.json();
+
+      if (data.error) {
+        wfLoading.classList.add('hidden');
+        wfError.textContent = data.error;
+        wfError.classList.remove('hidden');
+        return;
+      }
+
+      wfLoading.classList.add('hidden');
+      wfResultContent.classList.remove('hidden');
+
+      const isPositive = data.prediction === 'fire';
+      wfResultClass.textContent = isPositive ? 'Wildfire Detected' : 'No Wildfire';
+      wfResultClass.className = `text-lg font-extrabold font-headline ${isPositive ? 'text-error' : 'text-green-400'}`;
+      wfResultConfidence.textContent = data.confidence + '%';
+      wfResultBar.style.width = data.confidence + '%';
+      wfResultBar.className = `h-full transition-all duration-700 rounded-full ${isPositive ? 'bg-gradient-to-r from-error to-red-400' : 'bg-gradient-to-r from-green-400 to-emerald-300'}`;
+
+    } catch (err) {
+      wfLoading.classList.add('hidden');
+      wfError.textContent = 'Could not connect to the server. Make sure the Flask backend is running on port 5000.';
+      wfError.classList.remove('hidden');
+    }
+  });
+</script>
+</body></html>

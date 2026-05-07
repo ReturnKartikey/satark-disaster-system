@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed-dim": "#ffb872",
+                        "inverse-on-surface": "#eff1f5",
+                        "on-tertiary-fixed": "#2d1600",
+                        "surface-tint": "#006494",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "surface-container-highest": "#e0e2e7",
+                        "on-secondary": "#ffffff",
+                        "surface-container-lowest": "#ffffff",
+                        "on-secondary-container": "#5e6367",
+                        "surface-dim": "#d8dade",
+                        "tertiary-fixed": "#ffdcbf",
+                        "on-tertiary-container": "#ffcfa5",
+                        "tertiary": "#6a3b00",
+                        "inverse-surface": "#2d3134",
+                        "on-surface-variant": "#40484f",
+                        "on-primary-container": "#b6ddff",
+                        "tertiary-container": "#8b5001",
+                        "surface": "#f8f9fe",
+                        "on-primary-fixed": "#001e30",
+                        "primary-fixed": "#cbe6ff",
+                        "on-error": "#ffffff",
+                        "on-surface": "#191c1f",
+                        "on-secondary-fixed": "#171c1f",
+                        "surface-variant": "#e0e2e7",
+                        "inverse-primary": "#8ecdff",
+                        "background": "#f8f9fe",
+                        "surface-container-high": "#e6e8ed",
+                        "surface-container-low": "#f2f4f8",
+                        "on-secondary-fixed-variant": "#43474b",
+                        "secondary-container": "#dce0e4",
+                        "on-background": "#191c1f",
+                        "secondary-fixed-dim": "#c3c7cb",
+                        "outline": "#707880",
+                        "secondary-fixed": "#dfe3e7",
+                        "on-tertiary-fixed-variant": "#6a3c00",
+                        "primary-fixed-dim": "#8ecdff",
+                        "on-primary-fixed-variant": "#004b71",
+                        "error-container": "#ffdad6",
+                        "secondary": "#5a5f62",
+                        "error": "#ba1a1a",
+                        "primary-container": "#006494",
+                        "surface-bright": "#f8f9fe",
+                        "on-error-container": "#93000a",
+                        "outline-variant": "#c0c7d0",
+                        "surface-container": "#eceef2",
+                        "primary": "#004b71"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "1rem",
+                        "lg": "2rem",
+                        "xl": "3rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "lg": "48px",
+                        "gutter": "24px",
+                        "margin": "32px",
+                        "base": "8px",
+                        "xs": "4px",
+                        "xl": "80px",
+                        "sm": "12px",
+                        "md": "24px"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Manrope"],
+                        "body-lg": ["Manrope"],
+                        "display": ["Manrope"],
+                        "h1": ["Manrope"],
+                        "h3": ["Manrope"],
+                        "body-md": ["Manrope"],
+                        "label-sm": ["Manrope"],
+                        "h2": ["Manrope"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #f8f9fe;
+            color: #191c1f;
+        }
+        .whisper-shadow {
+            box-shadow: 0 10px 40px -10px rgba(0, 75, 113, 0.08);
+        }
+    </style>
+<link href="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.css" rel="stylesheet"/>
+<script src="https://api.mapbox.com/mapbox-gl-js/v2.15.0/mapbox-gl.js"></script></head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<header class="fixed top-0 w-full z-50 bg-slate-900/70 backdrop-blur-xl flex justify-between items-center px-8 h-16 w-full">
+<div class="flex items-center gap-4">
+<span class="text-xl font-bold tracking-tight text-slate-100">SATARK Sentinel</span>
+</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-label-md text-label-md" href="#">Monitoring</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-label-md text-label-md" href="#">Resources</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-label-md text-label-md" href="#">Safety</a>
+<a class="text-slate-400 hover:text-slate-200 transition-colors font-label-md text-label-md" href="#">Reports</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-slate-800/50 transition-all duration-300 rounded-full text-sky-400">
+<span class="material-symbols-outlined">light_mode</span>
+</button>
+<button class="p-2 hover:bg-slate-800/50 transition-all duration-300 rounded-full text-slate-400">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<img alt="Crisis Operator Profile" class="w-8 h-8 rounded-full border border-slate-700" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3csj1vtjMTXpLuHVveuyW9gjhxNHS80eBErqHHVl636l1BOOZivxSyfN3mQOLlWoQ8E-XCx_IndBufYXzNNwZJt8epIXvHlqWEhaHwPwdndj0-x1TlbrXV9g8QAv3tcNJxdhohlD5yTgrd0w1bWmeDCFPrac2wDORmD5fXxApaWB1dXl9ZfS_k7Dx-EA2vr2xV5yhQuLw4NLBnb-TpZPfhBDcprP9rxwAmLUYVJI7IsfzeGVAjQuw4k_KaOQtt_lWZGMcMVl2-QcE"/>
+</div>
+</header>
+<div class="flex pt-16 min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 h-full w-64 bg-slate-950 flex flex-col py-6 rounded-r-[3rem] z-40 hidden md:flex">
+<div class="px-6 mb-8">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-sky-500 rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">radar</span>
+</div>
+<div>
+<h2 class="text-lg font-black text-slate-100 font-display text-display leading-none">Sentinel Hub</h2>
+<p class="text-xs text-slate-500 uppercase tracking-widest font-label-sm">Active Monitoring</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 flex-1 overflow-y-auto">
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label-md text-label-md transition-all rounded-full hover:bg-slate-800/40" href="#">
+<span class="material-symbols-outlined">tsunami</span>
+                    Flood Analysis
+                </a>
+<a class="bg-sky-500/10 text-sky-400 rounded-full mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label-md text-label-md transition-all" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">cyclone</span>
+                    Cyclone Path
+                </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label-md text-label-md transition-all rounded-full hover:bg-slate-800/40" href="#">
+<span class="material-symbols-outlined">local_fire_department</span>
+                    Wildfire Tracking
+                </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label-md text-label-md transition-all rounded-full hover:bg-slate-800/40" href="#">
+<span class="material-symbols-outlined">psychology</span>
+                    ML Insights
+                </a>
+<a class="text-slate-500 hover:text-slate-300 mx-2 my-1 px-4 py-3 flex items-center gap-3 font-label-md text-label-md transition-all rounded-full hover:bg-slate-800/40" href="#">
+<span class="material-symbols-outlined">map</span>
+                    Heatmaps
+                </a>
+</div>
+<div class="px-4 mt-auto mb-8">
+<button class="w-full bg-error text-on-error font-bold py-4 px-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined">emergency_share</span>
+                    Emergency Dispatch
+                </button>
+</div>
+<div class="px-2 border-t border-slate-800 pt-4 flex flex-col gap-1">
+<a class="text-slate-500 hover:text-slate-300 px-4 py-2 flex items-center gap-3 text-sm" href="#">
+<span class="material-symbols-outlined">phone_in_talk</span>
+                    Help Line
+                </a>
+<a class="text-slate-500 hover:text-slate-300 px-4 py-2 flex items-center gap-3 text-sm" href="#">
+<span class="material-symbols-outlined">menu_book</span>
+                    Documentation
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 bg-surface px-8 py-12">
+<div class="max-w-7xl mx-auto space-y-xl">
+<!-- Hero / Analysis Header -->
+<header class="space-y-4">
+<div class="flex items-center gap-2 text-primary">
+<span class="material-symbols-outlined">storm</span>
+<span class="font-label-md text-label-md uppercase tracking-wider">Dynamic Trajectory Analysis</span>
+</div>
+<h1 class="font-h1 text-h1 text-on-surface">Cyclone Path Intelligence</h1>
+<p class="text-on-surface-variant max-w-2xl font-body-lg text-body-lg">
+                        Leverage neural-enhanced geospatial modeling to predict landfall coordinates and velocity spikes with industry-leading precision.
+                    </p>
+</header>
+<!-- Analysis Bento Grid -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Image Upload & Map Area -->
+<div class="lg:col-span-8 bg-white rounded-xl whisper-shadow border border-surface-container p-6">
+<div class="relative rounded-lg overflow-hidden h-[500px] bg-slate-100 border-2 border-dashed border-outline-variant flex flex-col items-center justify-center group">
+<img class="absolute inset-0 w-full h-full object-cover opacity-80 mix-blend-multiply" data-alt="A high-resolution satellite meteorological view of a massive tropical cyclone swirling over the ocean near a coastline. The visual uses professional weather radar color gradients including deep cyans, bright whites, and dangerous purples. The lighting is bright and technical, showing the eye of the storm with terrifying clarity against the deep blue of the Pacific. The overall aesthetic is clean, scientific, and modern." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDr4u4vqThIZUEGdsOowgStD4lB3fJYtluKPUEZnc_0iNLMrNMuw7ONOj8vOZOHVqYE-jog2M_lOwTBTzB9SIiHQsFF-yh96BYU7LJ4Iw8YFNV8PLsr3eMWvJSWbcUuBmhvXGhzrpqDMK_F0pOoME2Qvggd6CVOxqx0oBXns2fdwvyNHGnDACiLIGe_PBYLTdFvqX_BGPF7puOVWajQ7oDDqQ60aUO_Kj-I1vkZaDvIOGlDPNBxmAJ6sYNZJGgU0wP-U4txFA46PPwc"/>
+<div class="relative z-10 flex flex-col items-center bg-white/90 backdrop-blur-md p-8 rounded-lg shadow-xl border border-white">
+<span class="material-symbols-outlined text-primary text-5xl mb-4">cloud_upload</span>
+<h3 class="font-h3 text-h3 mb-2">Upload Satellite Data</h3>
+<p class="text-on-surface-variant text-center mb-6">Drag and drop high-res TIFF or GEOSPATIAL imagery for instant ML path prediction.</p>
+<button class="px-8 py-3 bg-primary text-on-primary rounded-full font-label-md text-label-md hover:bg-primary/90 transition-all shadow-lg">
+                                    Browse Files
+                                </button>
+</div>
+</div>
+</div>
+<!-- ML Results Sidebar -->
+<div class="lg:col-span-4 flex flex-col gap-gutter">
+<div class="bg-white rounded-xl whisper-shadow border border-surface-container p-8 flex-1">
+<h3 class="font-h3 text-h3 mb-6 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">analytics</span>
+                                ML Insights
+                            </h3>
+<div class="space-y-8">
+<div class="space-y-2">
+<div class="flex justify-between items-end">
+<span class="text-on-surface-variant font-label-sm">Confidence Index</span>
+<span class="text-h2 font-h2 text-primary">94.2%</span>
+</div>
+<div class="w-full bg-surface-container-high h-3 rounded-full overflow-hidden">
+<div class="bg-primary h-full w-[94.2%]"></div>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container-low rounded-lg">
+<span class="block text-xs text-on-surface-variant font-label-sm mb-1">Max Velocity</span>
+<span class="text-xl font-bold text-on-surface">215 <small class="text-xs font-normal">km/h</small></span>
+</div>
+<div class="p-4 bg-surface-container-low rounded-lg">
+<span class="block text-xs text-on-surface-variant font-label-sm mb-1">Central Pressure</span>
+<span class="text-xl font-bold text-on-surface">920 <small class="text-xs font-normal">hPa</small></span>
+</div>
+</div>
+<div class="p-4 bg-primary-container rounded-lg border border-primary/20">
+<span class="block text-sm text-on-primary-container font-label-md mb-2">Estimated Landfall</span>
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-on-primary-container">location_on</span>
+<div>
+<p class="text-lg font-bold text-on-primary-fixed">Bhubaneswar, Odisha</p>
+<p class="text-xs text-on-primary-fixed-variant">Approx. 42 hours (Oct 24, 02:00 AM)</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Resource Allocation Module -->
+<section class="bg-white rounded-xl whisper-shadow border border-surface-container p-10">
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="font-h2 text-h2 text-on-surface">Emergency Resource Allocation</h2>
+<p class="text-on-surface-variant font-body-md text-body-md">Strategic deployment based on projected impact zones.</p>
+</div>
+<button class="bg-surface-container-highest text-on-surface px-6 py-3 rounded-full font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-high transition-all">
+<span class="material-symbols-outlined">sync</span>
+                            Optimize Logistics
+                        </button>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+<!-- Deployment Controls -->
+<div class="space-y-6">
+<div class="p-5 border border-surface-container rounded-lg hover:border-primary/30 transition-colors">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-blue-500">medical_services</span>
+<span class="font-h3 text-h3">Medical Units</span>
+</div>
+<span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-bold">12 Active</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-xs text-on-surface-variant mt-2">
+<span>Standby</span>
+<span>Full Alert</span>
+</div>
+</div>
+<div class="p-5 border border-surface-container rounded-lg hover:border-primary/30 transition-colors">
+<div class="flex justify-between items-center mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-error">local_fire_department</span>
+<span class="font-h3 text-h3">NDRF Teams</span>
+</div>
+<span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">08 Deploy</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer accent-primary" type="range"/>
+<div class="flex justify-between text-xs text-on-surface-variant mt-2">
+<span>Standby</span>
+<span>Full Alert</span>
+</div>
+</div>
+</div>
+<!-- Vulnerability Map Miniature -->
+<div class="md:col-span-2 relative rounded-lg overflow-hidden border border-surface-container-highest min-h-[400px] bg-slate-50">
+<div class="absolute inset-0 w-full h-full" id="resource-map"></div>
+<div class="absolute top-4 left-4 bg-white/95 backdrop-blur shadow-lg p-3 rounded-lg flex items-center gap-3 z-10">
+<div class="w-3 h-3 bg-error rounded-full animate-pulse"></div>
+<span class="text-xs font-bold text-on-surface">Live Resource Distribution</span>
+</div>
+<div class="absolute bottom-4 left-4 bg-white/90 backdrop-blur p-3 rounded-lg shadow-md z-10 space-y-2">
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="material-symbols-outlined text-blue-500 text-sm">medical_services</span> Ambulances
+        </div>
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="material-symbols-outlined text-error text-sm">fire_truck</span> Relief Teams
+        </div>
+<div class="flex items-center gap-2 text-xs font-medium">
+<span class="material-symbols-outlined text-sky-600 text-sm">helicopter_side</span> Air Support
+        </div>
+</div>
+<script>
+        mapboxgl.accessToken = 'pk.eyJ1IjoiZGV2ZWxvcGVyLWFpIiwiYSI6ImNsbnJmYm9nZzAwNHkycXA2eGZ4Z3R5Z3AifQ.example'; // Generic token placeholder
+        const map = new mapboxgl.Map({
+            container: 'resource-map',
+            style: 'mapbox://styles/mapbox/light-v11',
+            center: [85.8245, 20.2961], // Bhubaneswar coordinates
+            zoom: 7
+        });
+
+        const resources = [
+            { type: 'medical_services', color: '#3b82f6', coords: [85.8, 20.3], label: 'Ambulance 04' },
+            { type: 'fire_truck', color: '#ef4444', coords: [86.2, 20.1], label: 'NDRF Alpha' },
+            { type: 'helicopter_side', color: '#0284c7', coords: [85.5, 20.5], label: 'Rescue Heli-1' }
+        ];
+
+        resources.forEach(res => {
+            const el = document.createElement('div');
+            el.className = 'marker';
+            el.innerHTML = `<span class="material-symbols-outlined" style="color: ${res.color}; font-size: 24px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));">${res.type}</span>`;
+            new mapboxgl.Marker(el)
+                .setLngLat(res.coords)
+                .setPopup(new mapboxgl.Popup({ offset: 25 }).setHTML(`<b>${res.label}</b>`))
+                .addTo(map);
+        });
+    </script>
+</div>
+</div>
+</section>
+<!-- Safety Protocols Section -->
+<section class="space-y-8">
+<div class="text-center">
+<h2 class="font-h2 text-h2 text-on-surface">Civilian Safety &amp; Protocols</h2>
+<p class="text-on-surface-variant">Automated directives for immediate dissemination to local authorities.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="bg-white p-6 rounded-lg border border-surface-container text-center space-y-3 hover:scale-105 transition-transform">
+<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center mx-auto">
+<span class="material-symbols-outlined">home</span>
+</div>
+<h4 class="font-bold text-on-surface">Evacuation</h4>
+<p class="text-sm text-on-surface-variant">Secure all coastal dwellings and move to 5km inland shelters.</p>
+</div>
+<div class="bg-white p-6 rounded-lg border border-surface-container text-center space-y-3 hover:scale-105 transition-transform">
+<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center mx-auto">
+<span class="material-symbols-outlined">electrical_services</span>
+</div>
+<h4 class="font-bold text-on-surface">Utilities</h4>
+<p class="text-sm text-on-surface-variant">Grid isolation scheduled for impact zone 2 hours prior.</p>
+</div>
+<div class="bg-white p-6 rounded-lg border border-surface-container text-center space-y-3 hover:scale-105 transition-transform">
+<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center mx-auto">
+<span class="material-symbols-outlined">emergency</span>
+</div>
+<h4 class="font-bold text-on-surface">Emergency Kit</h4>
+<p class="text-sm text-on-surface-variant">Stock 72-hour food supply and essential medical kits.</p>
+</div>
+<div class="bg-white p-6 rounded-lg border border-surface-container text-center space-y-3 hover:scale-105 transition-transform">
+<div class="w-12 h-12 bg-sky-100 text-sky-700 rounded-full flex items-center justify-center mx-auto">
+<span class="material-symbols-outlined">cell_tower</span>
+</div>
+<h4 class="font-bold text-on-surface">Communication</h4>
+<p class="text-sm text-on-surface-variant">Maintain radio silence except for emergency distress signals.</p>
+</div>
+</div>
+</section>
+</div>
+</main>
+</div>
+<!-- Footer -->
+<footer class="bg-slate-950 w-full py-12 rounded-t-[3rem] mt-auto flex flex-col items-center justify-center gap-4 w-full text-slate-500 font-Inter text-sm">
+<p class="font-bold text-slate-200">Editorial Resilience</p>
+<div class="flex gap-8">
+<a class="hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500" href="#">Privacy Policy</a>
+<a class="hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500" href="#">Terms of Service</a>
+<a class="hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500" href="#">Contact Support</a>
+<a class="hover:underline decoration-sky-500 underline-offset-4 transition-opacity duration-500" href="#">Global GIS Standards</a>
+</div>
+<p class="text-slate-500 mt-4 opacity-75">© 2024 Editorial Resilience Disaster Systems. All Rights Reserved.</p>
+</footer>
+</body></html>

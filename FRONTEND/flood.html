@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Flood Analysis | SATARK</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Manrope:wght@700;800&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script>
+tailwind.config={darkMode:"class",theme:{extend:{
+  colors:{"error-container":"#93000a","on-secondary":"#2d3135","on-primary":"#003354","surface-container-low":"#1a1c1e","surface-tint":"#98cbff","inverse-surface":"#e2e2e5","tertiary":"#ffb3ae","surface-variant":"#333537","on-error-container":"#ffdad6","on-surface":"#e2e2e5","on-tertiary-container":"#ffccc8","secondary":"#c3c7cc","secondary-container":"#484c50","outline-variant":"#40484f","primary-fixed":"#cfe5ff","background":"#121416","primary-container":"#00629d","outline":"#8a919a","surface-container-high":"#282a2c","on-error":"#690005","on-secondary-container":"#b9bcc1","inverse-primary":"#00629d","on-primary-container":"#bcdcff","surface-container-highest":"#333537","surface":"#121416","on-surface-variant":"#c0c7d0","tertiary-container":"#ba1723","error":"#ffb4ab","primary":"#98cbff","on-tertiary":"#68000b","surface-container":"#1e2022","surface-dim":"#121416","on-background":"#e2e2e5","surface-bright":"#37393b","surface-container-lowest":"#0c0e10"},
+  borderRadius:{"DEFAULT":"1rem","lg":"2rem","xl":"3rem","full":"9999px"},
+  fontFamily:{"headline":["Manrope"],"body":["Inter"],"label":["Plus Jakarta Sans"]}
+}}}
+</script>
+<style>
+  body{font-family:'Inter',sans-serif;background-color:#121416;}
+  .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
+  .atmospheric-shadow{box-shadow:0px 20px 40px rgba(226,226,229,0.04);}
+  .upload-zone{transition:all 0.3s ease;}
+  .upload-zone:hover{border-color:rgba(152,203,255,0.5);background:rgba(30,32,34,0.8);}
+  .upload-zone.dragover{border-color:#98cbff;background:rgba(152,203,255,0.05);transform:scale(1.01);}
+  .result-card{animation:slideUp 0.4s ease-out;}
+  @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+  .fade-in{animation:fadeIn 0.5s ease-out;}
+</style>
+</head>
+<body class="text-on-surface bg-background min-h-screen flex">
+
+<!-- Sidebar -->
+<aside class="hidden md:flex flex-col h-screen py-6 bg-slate-950 w-64 rounded-r-[2rem] sticky top-0 shrink-0 z-40">
+  <div class="px-6 mb-8">
+    <a href="/" class="block">
+      <h1 class="text-lg font-black text-slate-100 font-headline">SATARK</h1>
+      <p class="text-xs text-slate-500 font-label">Disaster Management System</p>
+    </a>
+  </div>
+  <nav class="flex-1 space-y-1 px-3">
+    <a class="flex items-center gap-3 py-3 px-4 bg-sky-500/10 text-sky-400 rounded-xl transition-all font-label text-sm" href="/flood">
+      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">tsunami</span> Flood Analysis
+    </a>
+    <a class="flex items-center gap-3 py-3 px-4 text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 rounded-xl transition-all font-label text-sm" href="/wildfire">
+      <span class="material-symbols-outlined">local_fire_department</span> Wildfire Tracking
+    </a>
+    <a class="flex items-center gap-3 py-3 px-4 text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 rounded-xl transition-all font-label text-sm" href="/cyclone">
+      <span class="material-symbols-outlined">cyclone</span> Cyclone Path
+    </a>
+    <a class="flex items-center gap-3 py-3 px-4 text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 rounded-xl transition-all font-label text-sm" href="/resources">
+      <span class="material-symbols-outlined">emergency</span> Resource Allocation
+    </a>
+  </nav>
+  <div class="px-4 mt-auto space-y-3">
+    <a href="/" class="flex items-center gap-3 py-2 px-4 text-slate-500 hover:text-slate-300 text-sm font-label transition-all">
+      <span class="material-symbols-outlined text-sm">home</span> Back to Home
+    </a>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="flex-1 flex flex-col min-w-0">
+  <!-- Top Bar -->
+  <header class="flex justify-between items-center px-8 h-16 sticky top-0 z-30 bg-slate-900/70 backdrop-blur-xl">
+    <div class="flex items-center gap-4">
+      <a href="/" class="md:hidden text-xl font-bold text-slate-100 font-headline">SATARK</a>
+      <span class="hidden md:block text-sm text-slate-400 font-label">Flood Analysis Module</span>
+    </div>
+    <nav class="flex items-center gap-4">
+      <a href="/flood" class="text-sky-400 text-sm font-bold md:hidden">Flood</a>
+      <a href="/wildfire" class="text-slate-400 text-sm md:hidden">Fire</a>
+      <a href="/cyclone" class="text-slate-400 text-sm md:hidden">Cyclone</a>
+    </nav>
+  </header>
+
+  <main class="flex-1 p-6 md:p-10 max-w-6xl mx-auto w-full">
+    <!-- Page Header -->
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="px-3 py-1 bg-primary/10 text-primary text-[10px] uppercase tracking-widest font-bold rounded-full flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span> ViT Model Ready
+        </span>
+      </div>
+      <h2 class="text-4xl font-extrabold font-headline tracking-tight mb-2">Flood Detection</h2>
+      <p class="text-on-surface-variant max-w-xl">Upload a satellite or aerial image to detect flood conditions using our trained Vision Transformer model.</p>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+      <!-- Left: Upload -->
+      <div class="lg:col-span-3 space-y-6">
+        <!-- Upload Zone -->
+        <div id="upload-zone" class="upload-zone bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 rounded-xl p-12 flex flex-col items-center text-center cursor-pointer" onclick="document.getElementById('file-input').click()">
+          <input type="file" id="file-input" accept="image/*" class="hidden"/>
+          <div class="w-20 h-20 bg-surface-container-high rounded-full flex items-center justify-center mb-5">
+            <span class="material-symbols-outlined text-primary text-4xl">cloud_upload</span>
+          </div>
+          <h5 class="font-bold font-headline text-lg mb-2">Upload Disaster Image</h5>
+          <p class="text-sm text-on-surface-variant mb-6 max-w-sm">Drag & drop or click to select a satellite image. Our ViT model will analyze it for flood conditions.</p>
+          <span class="px-8 py-3 bg-primary text-on-primary font-bold text-sm rounded-xl hover:scale-105 transition-transform inline-block">
+            Select Image
+          </span>
+        </div>
+
+        <!-- Preview -->
+        <div id="preview-section" class="hidden fade-in">
+          <div class="bg-surface-container rounded-xl overflow-hidden atmospheric-shadow">
+            <img id="preview-img" class="w-full h-64 object-cover"/>
+            <div class="p-4 flex items-center justify-between">
+              <div>
+                <p class="text-sm font-bold" id="preview-filename">image.jpg</p>
+                <p class="text-xs text-on-surface-variant" id="preview-size">0 KB</p>
+              </div>
+              <button onclick="document.getElementById('file-input').click()" class="text-primary text-sm font-bold hover:underline">Change Image</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Results -->
+      <div class="lg:col-span-2 space-y-6">
+        <!-- Waiting State -->
+        <div id="waiting-state" class="bg-surface-container-low rounded-xl p-8 text-center border border-outline-variant/10">
+          <span class="material-symbols-outlined text-outline text-5xl mb-4">image_search</span>
+          <h5 class="font-headline font-bold mb-2">No Image Selected</h5>
+          <p class="text-sm text-on-surface-variant">Upload an image to see ML prediction results here.</p>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="hidden bg-surface-container-low rounded-xl p-8 text-center border border-primary/20">
+          <div class="w-12 h-12 mx-auto border-3 border-primary border-t-transparent rounded-full animate-spin mb-4"></div>
+          <h5 class="font-headline font-bold mb-2">Analyzing Image...</h5>
+          <p class="text-sm text-on-surface-variant">Running ViT inference. This may take a few seconds.</p>
+        </div>
+
+        <!-- Result State -->
+        <div id="result-state" class="hidden result-card">
+          <div class="bg-surface-container-high rounded-xl p-6 border border-primary/20 atmospheric-shadow">
+            <div class="flex items-center gap-3 mb-5">
+              <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <span class="material-symbols-outlined text-primary">psychology</span>
+              </div>
+              <div>
+                <h5 class="font-headline font-bold">ML Prediction</h5>
+                <p class="text-[10px] text-on-surface-variant uppercase tracking-widest">ViT-Base-Patch16-224</p>
+              </div>
+            </div>
+
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-surface-container rounded-xl">
+                <span class="text-xs text-on-surface-variant font-label uppercase tracking-widest">Classification</span>
+                <span id="result-class" class="text-xl font-extrabold font-headline"></span>
+              </div>
+              <div class="p-4 bg-surface-container rounded-xl">
+                <div class="flex justify-between text-xs font-label text-on-surface-variant mb-2">
+                  <span>CONFIDENCE</span>
+                  <span id="result-confidence" class="text-primary font-bold"></span>
+                </div>
+                <div class="w-full h-3 bg-surface-container-lowest rounded-full overflow-hidden">
+                  <div id="result-bar" class="h-full rounded-full transition-all duration-1000 ease-out" style="width:0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="error-state" class="hidden bg-error-container/20 border border-error/30 rounded-xl p-6 text-center">
+          <span class="material-symbols-outlined text-error text-3xl mb-2">error</span>
+          <p id="error-message" class="text-sm text-on-error-container"></p>
+        </div>
+
+        <!-- Safety Info -->
+        <div class="bg-surface-container-low rounded-xl p-6 border border-outline-variant/5">
+          <h5 class="text-xs font-bold text-on-surface uppercase tracking-widest mb-4 font-headline">Flood Safety</h5>
+          <ul class="space-y-3">
+            <li class="flex gap-3 text-sm text-on-surface-variant"><span class="text-primary font-bold">01</span> Move to higher ground immediately.</li>
+            <li class="flex gap-3 text-sm text-on-surface-variant"><span class="text-primary font-bold">02</span> Avoid walking in moving water.</li>
+            <li class="flex gap-3 text-sm text-on-surface-variant"><span class="text-primary font-bold">03</span> Call emergency services: 112</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+const fileInput = document.getElementById('file-input');
+const uploadZone = document.getElementById('upload-zone');
+const previewSection = document.getElementById('preview-section');
+const previewImg = document.getElementById('preview-img');
+const previewFilename = document.getElementById('preview-filename');
+const previewSize = document.getElementById('preview-size');
+const waitingState = document.getElementById('waiting-state');
+const loadingState = document.getElementById('loading-state');
+const resultState = document.getElementById('result-state');
+const errorState = document.getElementById('error-state');
+
+// Drag and drop
+uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
+uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
+uploadZone.addEventListener('drop', (e) => {
+  e.preventDefault();
+  uploadZone.classList.remove('dragover');
+  if (e.dataTransfer.files.length) {
+    fileInput.files = e.dataTransfer.files;
+    handleFile(e.dataTransfer.files[0]);
+  }
+});
+
+fileInput.addEventListener('change', (e) => {
+  if (e.target.files[0]) handleFile(e.target.files[0]);
+});
+
+async function handleFile(file) {
+  // Show preview
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    previewImg.src = ev.target.result;
+    previewSection.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+  previewFilename.textContent = file.name;
+  previewSize.textContent = (file.size / 1024).toFixed(1) + ' KB';
+
+  // Show loading
+  waitingState.classList.add('hidden');
+  resultState.classList.add('hidden');
+  errorState.classList.add('hidden');
+  loadingState.classList.remove('hidden');
+
+  // Send to API
+  const formData = new FormData();
+  formData.append('image', file);
+
+  try {
+    const res = await fetch('/api/predict/flood', { method: 'POST', body: formData });
+    const data = await res.json();
+
+    loadingState.classList.add('hidden');
+
+    if (data.error) {
+      document.getElementById('error-message').textContent = data.error;
+      errorState.classList.remove('hidden');
+      return;
+    }
+
+    // Show result
+    const isPositive = data.prediction === 'Flood';
+    document.getElementById('result-class').textContent = data.prediction;
+    document.getElementById('result-class').className = `text-xl font-extrabold font-headline ${isPositive ? 'text-tertiary' : 'text-green-400'}`;
+    document.getElementById('result-confidence').textContent = data.confidence + '%';
+    const bar = document.getElementById('result-bar');
+    bar.className = `h-full rounded-full transition-all duration-1000 ease-out ${isPositive ? 'bg-gradient-to-r from-tertiary to-red-400' : 'bg-gradient-to-r from-green-400 to-emerald-300'}`;
+    setTimeout(() => { bar.style.width = data.confidence + '%'; }, 100);
+    resultState.classList.remove('hidden');
+
+  } catch (err) {
+    loadingState.classList.add('hidden');
+    document.getElementById('error-message').textContent = 'Cannot connect to server. Is the Flask backend running?';
+    errorState.classList.remove('hidden');
+  }
+}
+</script>
+</body>
+</html>

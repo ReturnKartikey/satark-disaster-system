@@ -57,6 +57,7 @@ inspect_output.txt
 !cyclone_final_metrics.txt
 !flood2_metrics.txt
 !wildfire2_metrics.txt
+!assets/*.png
 
 # OS files
 .DS_Store

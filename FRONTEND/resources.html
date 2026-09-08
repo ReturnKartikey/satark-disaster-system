@@ -22,15 +22,6 @@ tailwind.config={darkMode:"class",theme:{extend:{
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
   #map{border-radius:1rem;z-index:1;}
   .leaflet-container{background:#0c0e10;}
-  .ultra-dark-base .leaflet-tile,
-  .ultra-dark-base {
-    filter: brightness(0.32) contrast(1.45) saturate(0.6);
-  }
-  .crisp-labels .leaflet-tile,
-  .crisp-labels {
-    filter: brightness(1.25) contrast(1.3) drop-shadow(0px 1px 2px rgba(0,0,0,0.8));
-    opacity: 0.95;
-  }
   @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
   .animate-fade-up{animation:fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
   .result-card{animation:fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
@@ -85,14 +76,16 @@ tailwind.config={darkMode:"class",theme:{extend:{
     </div>
 
     <!-- Page Header -->
-    <div class="mb-6">
-      <div class="flex items-center gap-3 mb-3">
-        <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] uppercase tracking-widest font-bold rounded-full flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Resource Mapping
-        </span>
+    <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2 mb-1">
+          <span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] uppercase tracking-widest font-bold rounded-full flex items-center gap-1.5 border border-emerald-500/20">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Logistics Hub
+          </span>
+        </div>
+        <h2 class="text-2xl md:text-3xl font-extrabold font-headline tracking-tight text-slate-100">Tactical Resource Allocation & Routing</h2>
       </div>
-      <h2 class="text-3xl md:text-4xl font-extrabold font-headline tracking-tight mb-2">Resource Allocation & Routing</h2>
-      <p class="text-on-surface-variant max-w-2xl text-sm">Enter a disaster location and severity to automatically identify and route the nearest emergency resources.</p>
+      <p class="text-on-surface-variant max-w-md text-xs">Enter a disaster location and severity to automatically route the nearest emergency resources.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -246,28 +239,19 @@ let routeLines = [];
 let searchTimeout;
 
 // ============ MAP INIT ============
-map = L.map('map', { zoomControl: false, maxZoom: 16 }).setView([22.5, 78.9], 5);
+map = L.map('map', { zoomControl: false, maxZoom: 19 }).setView([22.5, 78.9], 5);
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// 1. Midnight Dark Basemap (Ultra-dark filtered Esri Dark Gray + Crisp Reference)
-const darkBase = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
-  attribution: 'Tiles &copy; Esri',
-  className: 'ultra-dark-base',
-  maxZoom: 16
-});
-
-const darkRef = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
-  attribution: '',
-  className: 'crisp-labels',
-  maxZoom: 16
-});
-
-const darkGroup = L.layerGroup([darkBase, darkRef]).addTo(map);
+// 1. Midnight Dark Basemap (Stadia Alidade Smooth Dark: genuine dark-mode with coastlines, borders & roads, zero watermarks)
+const darkLayer = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+  maxZoom: 20
+}).addTo(map);
 
 // 2. Tactical Satellite Imagery Basemap
 const satLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
   attribution: 'Tiles &copy; Esri World Imagery',
-  maxZoom: 16
+  maxZoom: 18
 });
 
 function setBasemap(style) {
@@ -275,11 +259,11 @@ function setBasemap(style) {
   const btnSat = document.getElementById('btn-map-sat');
   if (style === 'dark') {
     if (map.hasLayer(satLayer)) map.removeLayer(satLayer);
-    if (!map.hasLayer(darkGroup)) map.addLayer(darkGroup);
+    if (!map.hasLayer(darkLayer)) map.addLayer(darkLayer);
     btnDark.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1';
     btnSat.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';
   } else {
-    if (map.hasLayer(darkGroup)) map.removeLayer(darkGroup);
+    if (map.hasLayer(darkLayer)) map.removeLayer(darkLayer);
     if (!map.hasLayer(satLayer)) map.addLayer(satLayer);
     btnSat.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 transition-all flex items-center gap-1';
     btnDark.className = 'px-2.5 py-1 text-[11px] font-bold rounded-lg text-slate-400 hover:text-white transition-all flex items-center gap-1';

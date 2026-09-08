@@ -229,12 +229,18 @@ let routeLines = [];
 let searchTimeout;
 
 // ============ MAP INIT ============
-map = L.map('map', { zoomControl: false }).setView([22.5, 78.9], 5);
+map = L.map('map', { zoomControl: false, maxZoom: 16 }).setView([22.5, 78.9], 5);
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-  attribution: 'OpenStreetMap | CARTO',
-  subdomains: 'abcd', maxZoom: 19
+// Esri Dark Gray Base & Reference (No API key required, zero watermarks)
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+  attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+  maxZoom: 16
+}).addTo(map);
+
+L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}', {
+  attribution: '',
+  maxZoom: 16
 }).addTo(map);
 
 // Custom icons

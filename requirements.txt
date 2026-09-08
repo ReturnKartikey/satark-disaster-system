@@ -8,3 +8,10 @@ numpy
 matplotlib
 scikit-learn
 h5py
+waitress
+gunicorn
+tifffile
+seaborn
+tqdm
+opencv-python
+grad-cam

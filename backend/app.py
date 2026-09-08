@@ -1,7 +1,10 @@
 import os
 import io
 import math
+import time
+import base64
 import random
+import numpy as np
 import torch
 from flask import Flask, request, jsonify, render_template, url_for
 from flask_cors import CORS
@@ -9,14 +12,37 @@ from torchvision import transforms
 from transformers import ViTForImageClassification
 from PIL import Image
 
+try:
+    from pytorch_grad_cam import GradCAM
+    from pytorch_grad_cam.utils.image import show_cam_on_image
+    GRADCAM_AVAILABLE = True
+except ImportError:
+    GRADCAM_AVAILABLE = False
+
 # ============================================================
 # App Setup — templates are in FRONTEND folder
 # ============================================================
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 TEMPLATE_DIR = os.path.join(PROJECT_ROOT, "FRONTEND")
+ASSETS_DIR = os.path.join(PROJECT_ROOT, "assets")
 
-app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=None)
+app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=ASSETS_DIR, static_url_path='/assets')
 CORS(app)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
+
+# ============================================================
+# Image Transforms
+# ============================================================
+TRANSFORM_STANDARD = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+])
+
+TRANSFORM_NORMALIZED = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.5, 0.5, 0.5], std=[0.5, 0.5, 0.5]),
+])
 
 # ============================================================
 # Model Configuration
@@ -25,14 +51,17 @@ MODEL_CONFIG = {
     "flood": {
         "path": os.path.join(PROJECT_ROOT, "vit_flood2_model.pth"),
         "classes": ["No Flood", "Flood"],
+        "transform": TRANSFORM_NORMALIZED,
     },
     "wildfire": {
         "path": os.path.join(PROJECT_ROOT, "vit_wildfire2_model.pth"),
         "classes": ["fire", "nofire"],
+        "transform": TRANSFORM_STANDARD,
     },
     "cyclone": {
         "path": os.path.join(PROJECT_ROOT, "vit_cyclone_model.pth"),
         "classes": ["No Cyclone", "Cyclone"],
+        "transform": TRANSFORM_STANDARD,
     },
 }
 
@@ -41,14 +70,6 @@ MODEL_CONFIG = {
 # ============================================================
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"[SATARK] Using device: {device}")
-
-# ============================================================
-# Image transform (same as training pipeline)
-# ============================================================
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-])
 
 # ============================================================
 # Load all models at startup
@@ -76,22 +97,48 @@ for name, cfg in MODEL_CONFIG.items():
 
 print(f"\n[SATARK] Models ready: {list(models.keys())}")
 
-
 # ============================================================
-# Prediction helper
+# Grad-CAM Attention Heatmap Setup
 # ============================================================
-def predict_image(model, image_bytes, classes):
-    image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
-    input_tensor = transform(image).unsqueeze(0).to(device)
+class ViTWrapper(torch.nn.Module):
+    def __init__(self, m):
+        super().__init__()
+        self.m = m
+    def forward(self, x):
+        return self.m(x).logits
 
-    with torch.no_grad():
-        outputs = model(input_tensor)
-        probabilities = torch.softmax(outputs.logits, dim=1)
-        confidence, predicted = torch.max(probabilities, 1)
+def reshape_transform(tensor, height=14, width=14):
+    res = tensor[:, 1:, :].reshape(tensor.size(0), height, width, tensor.size(2))
+    return res.transpose(2, 3).transpose(1, 2)
 
-    predicted_class = classes[predicted.item()]
-    confidence_score = round(confidence.item() * 100, 2)
-    return predicted_class, confidence_score
+cam_objects = {}
+if GRADCAM_AVAILABLE:
+    for name, model in models.items():
+        try:
+            wrapped = ViTWrapper(model).to(device)
+            target_layers = [model.vit.encoder.layer[-1].layernorm_before]
+            cam_objects[name] = GradCAM(model=wrapped, target_layers=target_layers, reshape_transform=reshape_transform)
+            print(f"[SATARK] [OK] GradCAM initialized for {name}")
+        except Exception as e:
+            print(f"[SATARK] GradCAM init failed for {name}: {e}")
+
+def generate_heatmap(model_name, image, input_tensor):
+    if not GRADCAM_AVAILABLE or model_name not in cam_objects:
+        return None
+    try:
+        img_resized = image.resize((224, 224))
+        rgb_float = np.float32(img_resized) / 255.0
+        grayscale_cam = cam_objects[model_name](input_tensor=input_tensor, targets=None)[0, :]
+        viz = show_cam_on_image(rgb_float, grayscale_cam, use_rgb=True)
+        out_pil = Image.fromarray(viz)
+        if hasattr(image, 'size') and out_pil.size != image.size:
+            out_pil = out_pil.resize(image.size, Image.Resampling.BILINEAR)
+        buf = io.BytesIO()
+        out_pil.save(buf, format="JPEG", quality=85)
+        return "data:image/jpeg;base64," + base64.b64encode(buf.getvalue()).decode("utf-8")
+    except Exception as e:
+        print(f"[SATARK] GradCAM generation error for {model_name}: {e}")
+        return None
 
 
 # ============================================================
@@ -119,8 +166,16 @@ def resources_page():
 
 
 # ============================================================
-# API ROUTES — Prediction endpoints
+# API ROUTES — Prediction & Telemetry
 # ============================================================
+@app.route("/api/samples", methods=["GET"])
+def get_samples():
+    return jsonify({
+        "flood": "/assets/samples/flood_sample.jpg",
+        "wildfire": "/assets/samples/wildfire_sample.jpg",
+        "cyclone": "/assets/samples/cyclone_sample.jpg"
+    })
+
 @app.route("/api/predict/<disaster_type>", methods=["POST"])
 def predict(disaster_type):
     if disaster_type not in models:
@@ -134,17 +189,47 @@ def predict(disaster_type):
         return jsonify({"error": "Empty filename."}), 400
 
     try:
+        t0 = time.perf_counter()
         image_bytes = file.read()
-        classes = MODEL_CONFIG[disaster_type]["classes"]
-        predicted_class, confidence = predict_image(models[disaster_type], image_bytes, classes)
+        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
+        cfg = MODEL_CONFIG[disaster_type]
+        classes = cfg["classes"]
+        img_transform = cfg.get("transform", TRANSFORM_STANDARD)
+        input_tensor = img_transform(image).unsqueeze(0).to(device)
+
+        with torch.no_grad():
+            outputs = models[disaster_type](input_tensor)
+            probabilities = torch.softmax(outputs.logits, dim=1)
+            confidence, predicted = torch.max(probabilities, 1)
+
+        predicted_class = classes[predicted.item()]
+        confidence_score = round(confidence.item() * 100, 2)
+
+        # Dual class probabilities breakdown
+        probs_dict = {classes[i]: round(probabilities[0][i].item() * 100, 2) for i in range(len(classes))}
+
+        # Generate Explainable AI Heatmap (Grad-CAM)
+        heatmap_data = generate_heatmap(disaster_type, image, input_tensor)
+
+        t_elapsed = round((time.perf_counter() - t0) * 1000, 1)
 
         return jsonify({
             "model": disaster_type,
             "prediction": predicted_class,
-            "confidence": confidence,
+            "confidence": confidence_score,
+            "probabilities": probs_dict,
+            "heatmap": heatmap_data,
+            "latency_ms": t_elapsed,
+            "device": str(device).upper(),
+            "backbone": "ViT-B/16 (86.4M Params)"
         })
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
+@app.route("/favicon.ico")
+def favicon():
+    return ("", 204)
 
 
 @app.route("/api/health", methods=["GET"])
@@ -251,6 +336,7 @@ def allocate_resources():
 if __name__ == "__main__":
     print("\n[SATARK] ===========================================")
     print("[SATARK]  Starting SATARK Web Application")
-    print("[SATARK]  Open http://localhost:5000 in your browser")
+    port = int(os.environ.get("PORT", 5000))
+    print(f"[SATARK]  Open http://localhost:{port} in your browser")
     print("[SATARK] ===========================================\n")
-    app.run(host="0.0.0.0", port=5000, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False)

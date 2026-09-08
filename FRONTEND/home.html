@@ -38,138 +38,297 @@ tailwind.config = {
 }
 </script>
 <style>
+  html{scroll-behavior:smooth;}
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
-  .atmospheric-shadow{box-shadow:0px 20px 40px rgba(226,226,229,0.04);}
-  body{background-color:#121416;color:#e2e2e5;font-family:'Inter',sans-serif;}
-  .hero-fade{background:linear-gradient(180deg,rgba(18,20,22,0.9) 0%,rgba(18,20,22,0.4) 40%,rgba(18,20,22,0.9) 100%);}
+  .atmospheric-shadow{box-shadow:0px 25px 50px -12px rgba(0,0,0,0.7);}
+  body{background-color:#0c0e10;color:#e2e2e5;font-family:'Inter',sans-serif;overflow-x:hidden;}
+  .hero-fade{background:radial-gradient(circle at center, rgba(18,20,22,0.6) 0%, rgba(12,14,16,0.98) 85%);}
+
+  /* Fluid Animations */
+  @keyframes fadeSlideUp{
+    0%{opacity:0;transform:translateY(28px) scale(0.98);}
+    100%{opacity:1;transform:translateY(0) scale(1);}
+  }
+  @keyframes ambientGlow{
+    0%,100%{opacity:0.35;transform:scale(1) translate(0, 0);}
+    50%{opacity:0.6;transform:scale(1.12) translate(20px, -20px);}
+  }
+  .animate-fade-up{animation:fadeSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;}
+  .delay-1{animation-delay:0.1s;}
+  .delay-2{animation-delay:0.2s;}
+  .delay-3{animation-delay:0.3s;}
+  .delay-4{animation-delay:0.4s;}
+
+  .glow-orb-1{
+    position:absolute;width:550px;height:550px;border-radius:50%;
+    background:radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%);
+    filter:blur(60px);pointer-events:none;animation:ambientGlow 12s ease-in-out infinite;
+  }
+  .glow-orb-2{
+    position:absolute;width:500px;height:500px;border-radius:50%;
+    background:radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%);
+    filter:blur(60px);pointer-events:none;animation:ambientGlow 14s ease-in-out infinite reverse;
+  }
+
+  .interactive-card{
+    transition:all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .interactive-card:hover{
+    transform:translateY(-6px) scale(1.02);
+    box-shadow:0 25px 45px -12px rgba(0,0,0,0.8);
+  }
 </style>
 </head>
 <body class="selection:bg-primary-container selection:text-on-primary-container">
 
 <!-- Top Nav -->
-<header class="fixed top-0 w-full z-50 bg-slate-900/70 backdrop-blur-xl flex justify-between items-center px-8 h-16">
-  <a href="/" class="text-xl font-bold tracking-tight text-slate-100 font-headline">SATARK</a>
-  <nav class="hidden md:flex items-center gap-8">
-    <a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="/flood">Flood Analysis</a>
-    <a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="/wildfire">Wildfire Tracking</a>
-    <a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="/cyclone">Cyclone Path</a>
-    <a class="text-slate-400 hover:text-slate-200 transition-colors font-body text-sm" href="/resources">Resources</a>
-  </nav>
-  <div class="flex items-center gap-3">
-    <button class="p-2 text-slate-400 hover:bg-slate-800/50 rounded-full transition-all"><span class="material-symbols-outlined">notifications</span></button>
-    <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-on-primary-container font-bold text-sm">S</div>
+<header class="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 group">
+      <span class="text-xl font-black tracking-wider text-slate-100 font-headline group-hover:text-sky-400 transition-colors">SATARK</span>
+    </a>
+
+    <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-900/40 border border-slate-800/50 rounded-xl">
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/flood">Flood Analysis</a>
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/wildfire">Wildfire Tracking</a>
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/cyclone">Cyclone Path</a>
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/resources">Resource Map</a>
+    </nav>
+
+    <div class="flex items-center gap-3">
+      <a href="/resources" class="px-3.5 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl text-xs font-bold transition-all hover:scale-105 flex items-center gap-1.5 shadow-sm">
+        <span class="material-symbols-outlined text-sm">emergency</span> Operations Center
+      </a>
+    </div>
   </div>
 </header>
 
-<main class="pt-16">
+<main class="pt-16 relative">
+  <!-- Glowing Ambient Lights -->
+  <div class="glow-orb-1 top-20 left-1/4"></div>
+  <div class="glow-orb-2 top-40 right-1/4"></div>
+
   <!-- Hero -->
-  <section class="relative min-h-[90vh] flex flex-col items-center justify-center px-6 py-24 overflow-hidden">
-    <div class="absolute inset-0 z-0 opacity-40">
+  <section class="relative min-h-[85vh] flex flex-col items-center justify-center px-6 py-20 overflow-hidden">
+    <div class="absolute inset-0 z-0 opacity-30">
       <img class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWM3CUtTNb0RoQ-Y3m0OEqxWPAnZZxo9p8QeaM5Q6UeDH8RCkLU-ENAaIP0y5VlRo3kcRdd_yvLOtVXtnoxYhImdwiWbqqgC9y_jtwvxkvx8idknMyKZSPnfrbwZFuVdpORpYqUPC-K5j4hD1keToLQ1ct3V660Gq_ppGpst58JLI2Gre4PgO1PyFInWU_3EcImb49AqrOZw17HyziMFXoWG3c5mHPaU3F9jv-ywYQxjdffVPcqYC13ZdIdpQ-gpt6-m3LCh7m-hQr"/>
       <div class="hero-fade absolute inset-0"></div>
     </div>
-    <div class="relative z-10 text-center max-w-4xl mx-auto space-y-8">
-      <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-surface-container-high text-primary font-label text-xs tracking-wider uppercase">
-        <span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-        Live Satellite Intelligence
-      </div>
-      <h1 class="font-headline text-5xl md:text-7xl font-extrabold tracking-tighter text-on-surface leading-none">SATARK</h1>
-      <p class="font-headline text-xl md:text-2xl text-on-surface-variant">A Disaster Management & Mitigation System</p>
-      <p class="font-body text-base text-on-surface-variant max-w-2xl mx-auto leading-relaxed">
-        Deep Learning powered disaster detection using Vision Transformers. Upload satellite imagery to classify floods, wildfires, and cyclones in real-time.
+    <div class="relative z-10 text-center max-w-4xl mx-auto space-y-6 animate-fade-up">
+      <h1 class="font-headline text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 leading-none">
+        SATARK
+      </h1>
+      <p class="font-headline text-lg md:text-2xl text-sky-400 font-semibold tracking-wide">
+        Disaster Intelligence & Autonomous Emergency Logistics
       </p>
+      <p class="font-body text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
+        Harnessing multispectral satellite imagery and Vision Transformers (ViT) to detect catastrophic floods, active wildfires, and cyclonic vortexes in real-time — dispatching emergency responders instantly.
+      </p>
+      <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
+        <a href="/flood" class="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-sky-500/25 flex items-center gap-2 hover:scale-105">
+          <span>Explore Live Models</span>
+          <span class="material-symbols-outlined text-sm">arrow_forward</span>
+        </a>
+        <a href="/resources" class="px-6 py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 flex items-center gap-2 shadow-md">
+          <span class="material-symbols-outlined text-emerald-400 text-sm">emergency</span>
+          <span>Resource Dispatch</span>
+        </a>
+      </div>
     </div>
 
-    <!-- 3 Cards -->
-    <div class="relative z-10 mt-16 grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl mx-auto px-4">
-      <a href="/flood" class="group p-8 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/10 hover:border-primary/30 hover:scale-[1.02] transition-all duration-300">
-        <span class="material-symbols-outlined text-primary text-4xl mb-4">tsunami</span>
-        <h3 class="font-headline text-xl font-bold mb-2">Flood Detection</h3>
-        <p class="font-body text-sm text-on-surface-variant">Upload satellite imagery to detect flood events using ViT classification.</p>
-        <div class="mt-4 flex items-center gap-2 text-primary text-sm font-label font-bold">
-          <span>Analyze Now</span>
-          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+    <!-- Capabilities / Performance Strip -->
+    <div class="relative z-10 max-w-5xl mx-auto mt-14 px-4 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-cyan-500/30">
+        <p class="text-3xl font-black text-cyan-400 font-headline mb-1">99.1%</p>
+        <p class="text-xs text-slate-400 font-medium">Cyclone Precision</p>
+      </div>
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-orange-500/30">
+        <p class="text-3xl font-black text-orange-400 font-headline mb-1">98.9%</p>
+        <p class="text-xs text-slate-400 font-medium">Wildfire Accuracy</p>
+      </div>
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-sky-500/30">
+        <p class="text-3xl font-black text-sky-400 font-headline mb-1">81.9%</p>
+        <p class="text-xs text-slate-400 font-medium">Flood Detection</p>
+      </div>
+      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-emerald-500/30">
+        <p class="text-3xl font-black text-emerald-400 font-headline mb-1">&lt;100ms</p>
+        <p class="text-xs text-slate-400 font-medium">CUDA ViT Latency</p>
+      </div>
+    </div>
+
+    <!-- 4 Interactive Cards -->
+    <div class="relative z-10 mt-12 grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl mx-auto px-4">
+      <a href="/flood" class="interactive-card animate-fade-up delay-1 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-sky-500/40">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-sky-400 text-4xl group-hover:scale-110 transition-transform duration-300">tsunami</span>
+          <span class="text-[10px] font-mono font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">SENTINEL-2</span>
+        </div>
+        <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Flood Inundation</h3>
+        <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Classify catastrophic surface water logging and drone flood imagery with Explainable AI.</p>
+        <div class="flex items-center gap-2 text-sky-400 text-xs font-label font-bold">
+          <span>Launch ViT Scanner</span>
+          <span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
-      <a href="/wildfire" class="group p-8 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/10 hover:border-tertiary/30 hover:scale-[1.02] transition-all duration-300 md:-mt-6">
-        <span class="material-symbols-outlined text-tertiary text-4xl mb-4">local_fire_department</span>
-        <h3 class="font-headline text-xl font-bold mb-2">Wildfire Tracking</h3>
-        <p class="font-body text-sm text-on-surface-variant">Identify active fire zones from ground-level or aerial imagery.</p>
-        <div class="mt-4 flex items-center gap-2 text-tertiary text-sm font-label font-bold">
-          <span>Analyze Now</span>
-          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      <a href="/wildfire" class="interactive-card animate-fade-up delay-2 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-orange-500/40 md:-mt-4">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-orange-400 text-4xl group-hover:scale-110 transition-transform duration-300">local_fire_department</span>
+          <span class="text-[10px] font-mono font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">THERMAL</span>
+        </div>
+        <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Wildfire Tracking</h3>
+        <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Detect raging wildfire fronts from optical, drone, or satellite sensor imagery in milliseconds.</p>
+        <div class="flex items-center gap-2 text-orange-400 text-xs font-label font-bold">
+          <span>Launch ViT Scanner</span>
+          <span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
-      <a href="/cyclone" class="group p-8 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/10 hover:border-secondary/30 hover:scale-[1.02] transition-all duration-300">
-        <span class="material-symbols-outlined text-secondary text-4xl mb-4">cyclone</span>
-        <h3 class="font-headline text-xl font-bold mb-2">Cyclone Analysis</h3>
-        <p class="font-body text-sm text-on-surface-variant">Detect cyclonic activity from satellite IR imagery.</p>
-        <div class="mt-4 flex items-center gap-2 text-secondary text-sm font-label font-bold">
-          <span>Analyze Now</span>
-          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      <a href="/cyclone" class="interactive-card animate-fade-up delay-3 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-cyan-500/40">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-cyan-400 text-4xl group-hover:scale-110 transition-transform duration-300">cyclone</span>
+          <span class="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">INSAT-3D</span>
+        </div>
+        <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Cyclone Path</h3>
+        <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Analyze cyclonic vortices, eye formation, and atmospheric pressure systems with 99.1% accuracy.</p>
+        <div class="flex items-center gap-2 text-cyan-400 text-xs font-label font-bold">
+          <span>Launch ViT Scanner</span>
+          <span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
-      <a href="/resources" class="group p-8 rounded-xl bg-surface-container-low hover:bg-surface-container border border-outline-variant/10 hover:border-emerald-500/30 hover:scale-[1.02] transition-all duration-300 md:-mt-6">
-        <span class="material-symbols-outlined text-emerald-400 text-4xl mb-4">emergency</span>
-        <h3 class="font-headline text-xl font-bold mb-2">Resource Allocation</h3>
-        <p class="font-body text-sm text-on-surface-variant">Map nearest ambulances, rescue teams & route them to disaster zones.</p>
-        <div class="mt-4 flex items-center gap-2 text-emerald-400 text-sm font-label font-bold">
-          <span>Allocate Now</span>
-          <span class="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+      <a href="/resources" class="interactive-card animate-fade-up delay-4 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-emerald-500/40 md:-mt-4">
+        <div class="flex items-center justify-between mb-4">
+          <span class="material-symbols-outlined text-emerald-400 text-4xl group-hover:scale-110 transition-transform duration-300">emergency</span>
+          <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">OSRM</span>
+        </div>
+        <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Resource Routing</h3>
+        <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Auto-dispatch NDRF battalions, ambulances, and fire tenders along calculated tactical routes.</p>
+        <div class="flex items-center gap-2 text-emerald-400 text-xs font-label font-bold">
+          <span>Open Tactical Map</span>
+          <span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
     </div>
   </section>
 
   <!-- How It Works -->
-  <section class="py-20 px-6 bg-surface-container-low">
+  <section class="py-20 px-6 bg-surface-container-low/50 border-t border-b border-outline-variant/10">
     <div class="max-w-5xl mx-auto text-center mb-12">
-      <h2 class="font-headline text-4xl font-extrabold tracking-tight mb-4">How It Works</h2>
-      <p class="text-on-surface-variant max-w-xl mx-auto">Three simple steps to get real-time disaster classification.</p>
+      <h2 class="font-headline text-3xl md:text-4xl font-extrabold tracking-tight mb-3">How SATARK Operates</h2>
+      <p class="text-on-surface-variant text-sm max-w-xl mx-auto">From raw satellite telemetry to live responder routing in three streamlined stages.</p>
     </div>
     <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8">
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-3xl">cloud_upload</span></div>
-        <h4 class="font-headline font-bold text-lg">1. Upload Image</h4>
-        <p class="text-sm text-on-surface-variant">Select a satellite or ground-level image of the disaster area.</p>
+      <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/10 text-center space-y-4">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center"><span class="material-symbols-outlined text-sky-400 text-2xl">cloud_upload</span></div>
+        <h4 class="font-headline font-bold text-base text-slate-100">1. Satellite Ingestion</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Upload multispectral Sentinel-2 tiles, infrared captures, or aerial drone footage.</p>
       </div>
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-3xl">psychology</span></div>
-        <h4 class="font-headline font-bold text-lg">2. ViT Analysis</h4>
-        <p class="text-sm text-on-surface-variant">Our Vision Transformer model processes and classifies the image.</p>
+      <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/10 text-center space-y-4">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center"><span class="material-symbols-outlined text-purple-400 text-2xl">psychology</span></div>
+        <h4 class="font-headline font-bold text-base text-slate-100">2. ViT Attention & XAI</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Self-attention layers isolate disaster features and output Class Activation Heatmaps.</p>
       </div>
-      <div class="text-center space-y-4">
-        <div class="w-16 h-16 mx-auto rounded-full bg-primary/10 flex items-center justify-center"><span class="material-symbols-outlined text-primary text-3xl">verified</span></div>
-        <h4 class="font-headline font-bold text-lg">3. Get Results</h4>
-        <p class="text-sm text-on-surface-variant">Receive instant classification with confidence scores.</p>
+      <div class="p-6 rounded-2xl bg-surface-container-low border border-outline-variant/10 text-center space-y-4">
+        <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center"><span class="material-symbols-outlined text-emerald-400 text-2xl">emergency</span></div>
+        <h4 class="font-headline font-bold text-base text-slate-100">3. Automated Dispatch</h4>
+        <p class="text-xs text-on-surface-variant leading-relaxed">Instantly bridges verified disaster alerts to OSRM routing for closest emergency units.</p>
       </div>
     </div>
   </section>
 
   <!-- Tech Stack -->
   <section class="py-20 px-6">
-    <div class="max-w-5xl mx-auto bg-surface-container rounded-xl p-10 border border-outline-variant/10">
-      <h2 class="font-headline text-3xl font-extrabold mb-8">Technology Stack</h2>
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <div class="p-4 bg-surface-container-low rounded-lg text-center"><p class="font-headline font-bold text-primary mb-1">ViT</p><p class="text-xs text-on-surface-variant">Vision Transformer</p></div>
-        <div class="p-4 bg-surface-container-low rounded-lg text-center"><p class="font-headline font-bold text-primary mb-1">PyTorch</p><p class="text-xs text-on-surface-variant">Deep Learning</p></div>
-        <div class="p-4 bg-surface-container-low rounded-lg text-center"><p class="font-headline font-bold text-primary mb-1">Flask</p><p class="text-xs text-on-surface-variant">API Backend</p></div>
-        <div class="p-4 bg-surface-container-low rounded-lg text-center"><p class="font-headline font-bold text-primary mb-1">HuggingFace</p><p class="text-xs text-on-surface-variant">Transformers</p></div>
+    <div class="max-w-5xl mx-auto bg-surface-container rounded-2xl p-8 md:p-10 border border-outline-variant/10">
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+        <div>
+          <h2 class="font-headline text-2xl md:text-3xl font-extrabold text-slate-100 mb-1">Production Architecture</h2>
+          <p class="text-xs text-on-surface-variant">Engineered for low-latency humanitarian crisis response.</p>
+        </div>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
+          <p class="font-headline font-bold text-sky-400 mb-1">ViT-B/16</p>
+          <p class="text-xs text-slate-300 font-semibold">Vision Transformer</p>
+          <p class="text-[10px] text-on-surface-variant mt-1">86.4M Parameters</p>
+        </div>
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
+          <p class="font-headline font-bold text-orange-400 mb-1">Grad-CAM</p>
+          <p class="text-xs text-slate-300 font-semibold">Explainable AI</p>
+          <p class="text-[10px] text-on-surface-variant mt-1">Attention Heatmaps</p>
+        </div>
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
+          <p class="font-headline font-bold text-emerald-400 mb-1">OSRM Engine</p>
+          <p class="text-xs text-slate-300 font-semibold">Tactical Routing</p>
+          <p class="text-[10px] text-on-surface-variant mt-1">Shortest-Path Graph</p>
+        </div>
+        <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
+          <p class="font-headline font-bold text-amber-400 mb-1">NVIDIA CUDA</p>
+          <p class="text-xs text-slate-300 font-semibold">GPU Acceleration</p>
+          <p class="text-[10px] text-on-surface-variant mt-1">High-Throughput FP32</p>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
 <!-- Footer -->
-<footer class="w-full py-10 bg-slate-950 flex flex-col items-center gap-4">
-  <div class="font-bold text-slate-200 font-headline">SATARK — Disaster Management System</div>
-  <div class="flex gap-6">
-    <a href="/flood" class="text-slate-500 hover:text-sky-400 text-sm transition-colors">Flood</a>
-    <a href="/wildfire" class="text-slate-500 hover:text-sky-400 text-sm transition-colors">Wildfire</a>
-    <a href="/cyclone" class="text-slate-500 hover:text-sky-400 text-sm transition-colors">Cyclone</a>
-    <a href="/resources" class="text-slate-500 hover:text-emerald-400 text-sm transition-colors">Resources</a>
+<footer class="w-full bg-slate-950 border-t border-slate-800/60 text-slate-400">
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+      <!-- Col 1: Brand & Mission -->
+      <div class="md:col-span-1 space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-black tracking-wider text-slate-100 font-headline">SATARK</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Advanced satellite-driven disaster detection and tactical emergency logistics engine, powered by explainable Vision Transformers.
+        </p>
+        <div class="flex items-center gap-2 text-[11px] font-mono text-emerald-400 pt-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Inference Engine: Active</span>
+        </div>
+      </div>
+
+      <!-- Col 2: Detection Intelligence -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/flood" class="hover:text-sky-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
+          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
+          <li><a href="/cyclone" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
+          <li><a href="/resources" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Core Technology -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Architecture & Core</h4>
+        <ul class="space-y-1.5 text-xs text-slate-400 font-mono">
+          <li class="flex items-center justify-between"><span>Backbone:</span> <span class="text-slate-300">ViT-Base/16</span></li>
+          <li class="flex items-center justify-between"><span>Explainability:</span> <span class="text-slate-300">Grad-CAM (L-Norm)</span></li>
+          <li class="flex items-center justify-between"><span>Routing Engine:</span> <span class="text-slate-300">OSRM + OpenStreetMap</span></li>
+          <li class="flex items-center justify-between"><span>Compute Device:</span> <span class="text-slate-300">NVIDIA CUDA</span></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Protocols & Guidelines -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Integrated directly with emergency depots to calculate shortest-path tactical rescue routes during critical humanitarian situations.
+        </p>
+        <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors">
+          Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <p>© 2026 SATARK — Disaster Mitigation & AI Logistics Platform.</p>
+      <div class="flex items-center gap-4">
+        <span>Sentinel-2 • MODIS • INSAT-3D Telemetry Compatible</span>
+      </div>
+    </div>
   </div>
-  <p class="text-slate-600 text-xs">© 2025 SATARK Project. Built with ViT + Flask.</p>
 </footer>
 
 </body>

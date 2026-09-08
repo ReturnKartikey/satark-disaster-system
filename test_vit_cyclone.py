@@ -37,9 +37,15 @@ transform = transforms.Compose([
 # ======================
 # FOLDER PATHS
 # ======================
-# If you pass a folder as argument, it uses that. Otherwise defaults to cycloneTEST.
+# If you pass a folder as argument, it uses that. Otherwise auto-detects existing cyclone datasets.
 if len(sys.argv) < 2:
-    input_folder = "cycloneTEST"
+    candidates = [
+        "cyclone test data",
+        os.path.join("cyclone", "binary_data", "binary_data"),
+        "cycloneTEST",
+        "cyclone"
+    ]
+    input_folder = next((p for p in candidates if os.path.exists(p)), "cyclone")
 else:
     input_folder = sys.argv[1]
 
@@ -51,6 +57,11 @@ os.makedirs(output_folder, exist_ok=True)
 # ======================
 # LOOP THROUGH IMAGES
 # ======================
+if not os.path.exists(input_folder):
+    print(f"\nERROR: Input folder '{input_folder}' does not exist.")
+    print("Please supply an image folder as argument, e.g.: python test_vit_cyclone.py path/to/images")
+    sys.exit(1)
+
 print(f"\nScanning folder: {input_folder}")
 print("-" * 50)
 

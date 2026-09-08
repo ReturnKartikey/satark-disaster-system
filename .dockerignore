@@ -1,0 +1,57 @@
+# Git and GitHub
+.git
+.github
+.gitignore
+LICENSE
+README.md
+task.md
+implementation_plan.md
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.venv
+ENV/
+build/
+dist/
+*.egg-info/
+
+# Tests & Evaluation (not needed in production container)
+tests/
+evaluate_*.py
+train_vit_*.py
+test_vit_*.py
+test_model_*.py
+test_wildfire2_gradcam.py
+check_flood2.py
+inspect_data.py
+inspect_h5.py
+inspect_output.txt
+err.txt
+*.png
+*.txt
+
+# Local Dataset Files (do not bundle raw datasets into container)
+cyclone/
+flood/
+wildfire2/
+flood2/
+FloodNet Challenge/
+cyclone test data/
+flood test data/
+wildfire test data/
+cyclone test results/
+flood test results/
+wildfire test results/
+train/
+valid/
+heatmaps/
+
+# Development / Docker Compose
+docker-compose.yml
+Dockerfile
+.dockerignore

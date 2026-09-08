@@ -17,12 +17,14 @@ tailwind.config={darkMode:"class",theme:{extend:{
 }}}
 </script>
 <style>
-  body{font-family:'Inter',sans-serif;background-color:#121416;}
+  html{scroll-behavior:smooth;}
+  body{font-family:'Inter',sans-serif;background-color:#0c0e10;color:#e2e2e5;}
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
   #map{border-radius:1rem;z-index:1;}
   .leaflet-container{background:#1a1c1e;}
-  .result-card{animation:slideUp 0.4s ease-out;}
-  @keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
+  .animate-fade-up{animation:fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
+  .result-card{animation:fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
   @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(3);opacity:0;}}
   .pulse-marker{position:relative;}
   .pulse-marker::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid #ef4444;animation:pulse-ring 1.5s ease-out infinite;}
@@ -31,55 +33,48 @@ tailwind.config={darkMode:"class",theme:{extend:{
   .severity-high{background:#f9731620;color:#fb923c;border-color:#f9731640;}
   .severity-critical{background:#ef444420;color:#f87171;border-color:#ef444440;}
   .autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:50;max-height:200px;overflow-y:auto;}
+  .dtype-btn{transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1);}
 </style>
 </head>
-<body class="text-on-surface bg-background min-h-screen flex">
+<body class="text-on-surface bg-background min-h-screen flex flex-col selection:bg-emerald-500/20 selection:text-emerald-400">
 
-<!-- Sidebar -->
-<aside class="hidden md:flex flex-col h-screen py-6 bg-slate-950 w-64 rounded-r-[2rem] sticky top-0 shrink-0 z-40">
-  <div class="px-6 mb-8">
-    <a href="/" class="block">
-      <h1 class="text-lg font-black text-slate-100 font-headline">SATARK</h1>
-      <p class="text-xs text-slate-500 font-label">Disaster Management System</p>
+<!-- Top Nav -->
+<header class="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2 group">
+      <span class="text-xl font-black tracking-wider text-slate-100 font-headline group-hover:text-emerald-400 transition-colors">SATARK</span>
     </a>
-  </div>
-  <nav class="flex-1 space-y-1 px-3">
-    <a class="flex items-center gap-3 py-3 px-4 text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 rounded-xl transition-all font-label text-sm" href="/flood">
-      <span class="material-symbols-outlined">tsunami</span> Flood Analysis
-    </a>
-    <a class="flex items-center gap-3 py-3 px-4 text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 rounded-xl transition-all font-label text-sm" href="/wildfire">
-      <span class="material-symbols-outlined">local_fire_department</span> Wildfire Tracking
-    </a>
-    <a class="flex items-center gap-3 py-3 px-4 text-slate-500 hover:text-slate-300 hover:bg-slate-800/40 rounded-xl transition-all font-label text-sm" href="/cyclone">
-      <span class="material-symbols-outlined">cyclone</span> Cyclone Path
-    </a>
-    <a class="flex items-center gap-3 py-3 px-4 bg-emerald-500/10 text-emerald-400 rounded-xl transition-all font-label text-sm" href="/resources">
-      <span class="material-symbols-outlined" style="font-variation-settings:'FILL' 1;">emergency</span> Resource Allocation
-    </a>
-  </nav>
-  <div class="px-4 mt-auto">
-    <a href="/" class="flex items-center gap-3 py-2 px-4 text-slate-500 hover:text-slate-300 text-sm font-label transition-all">
-      <span class="material-symbols-outlined text-sm">home</span> Back to Home
-    </a>
-  </div>
-</aside>
 
-<!-- Main -->
-<div class="flex-1 flex flex-col min-w-0">
-  <header class="flex justify-between items-center px-8 h-16 sticky top-0 z-30 bg-slate-900/70 backdrop-blur-xl">
-    <div class="flex items-center gap-4">
-      <a href="/" class="md:hidden text-xl font-bold text-slate-100 font-headline">SATARK</a>
-      <span class="hidden md:block text-sm text-slate-400 font-label">Resource Allocation Module</span>
-    </div>
-    <nav class="flex items-center gap-4">
-      <a href="/flood" class="text-slate-400 text-sm md:hidden">Flood</a>
-      <a href="/wildfire" class="text-slate-400 text-sm md:hidden">Fire</a>
-      <a href="/cyclone" class="text-slate-400 text-sm md:hidden">Cyclone</a>
-      <a href="/resources" class="text-emerald-400 text-sm font-bold md:hidden">Resources</a>
+    <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-900/40 border border-slate-800/50 rounded-xl">
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/flood">Flood Analysis</a>
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/wildfire">Wildfire Tracking</a>
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/cyclone">Cyclone Path</a>
+      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm font-bold" href="/resources">Resource Map</a>
     </nav>
-  </header>
 
-  <main class="flex-1 p-4 md:p-8 w-full">
+    <div class="flex items-center gap-3">
+      <a href="/resources" class="px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition-all hover:scale-105 flex items-center gap-1.5 shadow-sm">
+        <span class="material-symbols-outlined text-sm">emergency</span> Operations Center
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="pt-28 pb-16 flex-1 px-4 md:px-8 max-w-7xl mx-auto w-full animate-fade-up">
+    <!-- Automated Incident Alert Banner -->
+    <div id="incident-banner" class="hidden mb-6 p-4 rounded-xl bg-orange-500/10 border border-orange-500/30 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-orange-400 text-2xl animate-pulse">warning</span>
+        <div>
+          <p class="text-xs font-bold text-orange-400 uppercase tracking-wider">Automated Incident Alert Received from ViT Scanner</p>
+          <p class="text-xs text-slate-300">Incident coordinates located. Auto-dispatching closest emergency units and calculating live tactical routes.</p>
+        </div>
+      </div>
+      <span class="px-2.5 py-1 text-[10px] font-mono font-bold bg-orange-500/20 text-orange-300 border border-orange-500/30 rounded-lg uppercase">
+        AUTO-DISPATCH ACTIVE
+      </span>
+    </div>
+
     <!-- Page Header -->
     <div class="mb-6">
       <div class="flex items-center gap-3 mb-3">
@@ -87,7 +82,7 @@ tailwind.config={darkMode:"class",theme:{extend:{
           <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Resource Mapping
         </span>
       </div>
-      <h2 class="text-3xl md:text-4xl font-extrabold font-headline tracking-tight mb-2">Resource Allocation</h2>
+      <h2 class="text-3xl md:text-4xl font-extrabold font-headline tracking-tight mb-2">Resource Allocation & Routing</h2>
       <p class="text-on-surface-variant max-w-2xl text-sm">Enter a disaster location and severity to automatically identify and route the nearest emergency resources.</p>
     </div>
 
@@ -159,7 +154,68 @@ tailwind.config={darkMode:"class",theme:{extend:{
       </div>
     </div>
   </main>
-</div>
+
+<!-- Footer -->
+<footer class="w-full bg-slate-950 border-t border-slate-800/60 text-slate-400 mt-auto">
+  <div class="max-w-7xl mx-auto px-6 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+      <!-- Col 1: Brand & Mission -->
+      <div class="md:col-span-1 space-y-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xl font-black tracking-wider text-slate-100 font-headline">SATARK</span>
+        </div>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Advanced satellite-driven disaster detection and tactical emergency logistics engine, powered by explainable Vision Transformers.
+        </p>
+        <div class="flex items-center gap-2 text-[11px] font-mono text-emerald-400 pt-1">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+          <span>Inference Engine: Active</span>
+        </div>
+      </div>
+
+      <!-- Col 2: Detection Intelligence -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
+        <ul class="space-y-2 text-xs">
+          <li><a href="/flood" class="hover:text-sky-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
+          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
+          <li><a href="/cyclone" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
+          <li><a href="/resources" class="text-emerald-400 font-semibold flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Core Technology -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Architecture & Core</h4>
+        <ul class="space-y-1.5 text-xs text-slate-400 font-mono">
+          <li class="flex items-center justify-between"><span>Backbone:</span> <span class="text-slate-300">ViT-Base/16</span></li>
+          <li class="flex items-center justify-between"><span>Explainability:</span> <span class="text-slate-300">Grad-CAM (L-Norm)</span></li>
+          <li class="flex items-center justify-between"><span>Routing Engine:</span> <span class="text-slate-300">OSRM + OpenStreetMap</span></li>
+          <li class="flex items-center justify-between"><span>Compute Device:</span> <span class="text-slate-300">NVIDIA CUDA</span></li>
+        </ul>
+      </div>
+
+      <!-- Col 4: Protocols & Guidelines -->
+      <div class="space-y-3">
+        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+        <p class="text-xs text-slate-400 leading-relaxed">
+          Integrated directly with emergency depots to calculate shortest-path tactical rescue routes during critical humanitarian situations.
+        </p>
+        <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
+          Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="pt-6 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+      <p>© 2026 SATARK — Disaster Mitigation & AI Logistics Platform.</p>
+      <div class="flex items-center gap-4">
+        <span>Sentinel-2 • MODIS • INSAT-3D Telemetry Compatible</span>
+      </div>
+    </div>
+  </div>
+</footer>
 
 <script>
 // ============ STATE ============
@@ -198,22 +254,31 @@ const disasterIcon = L.divIcon({
 // ============ TYPE / SEVERITY SELECTORS ============
 function selectType(btn, type) {
   selectedType = type;
-  const colors = { flood: ['sky', 'sky'], wildfire: ['orange', 'orange'], cyclone: ['cyan', 'cyan'] };
-  const c = colors[type];
+  const activeStyles = {
+    flood: 'border-sky-500/30 bg-sky-500/10 text-sky-400',
+    wildfire: 'border-orange-500/30 bg-orange-500/10 text-orange-400',
+    cyclone: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-400'
+  };
   document.querySelectorAll('.dtype-btn').forEach(b => {
     b.className = 'dtype-btn flex flex-col items-center gap-1 p-3 rounded-xl border border-outline-variant/10 bg-surface-container text-on-surface-variant text-xs font-bold transition-all hover:scale-105';
   });
-  btn.className = `dtype-btn active flex flex-col items-center gap-1 p-3 rounded-xl border border-${c[0]}-500/30 bg-${c[1]}-500/10 text-${c[0]}-400 text-xs font-bold transition-all hover:scale-105`;
+  const style = activeStyles[type] || activeStyles.flood;
+  btn.className = `dtype-btn active flex flex-col items-center gap-1 p-3 rounded-xl border ${style} text-xs font-bold transition-all hover:scale-105`;
 }
 
 function selectSeverity(btn, sev) {
   selectedSeverity = sev;
-  const colors = { low: 'green', medium: 'yellow', high: 'orange', critical: 'red' };
-  const c = colors[sev];
+  const activeStyles = {
+    low: 'border-green-500/30 bg-green-500/10 text-green-400',
+    medium: 'border-yellow-500/30 bg-yellow-500/10 text-yellow-400',
+    high: 'border-orange-500/30 bg-orange-500/10 text-orange-400',
+    critical: 'border-red-500/30 bg-red-500/10 text-red-400'
+  };
   document.querySelectorAll('.sev-btn').forEach(b => {
     b.className = 'sev-btn p-2 rounded-lg border border-outline-variant/10 bg-surface-container text-xs font-bold text-on-surface-variant transition-all hover:scale-105';
   });
-  btn.className = `sev-btn active p-2 rounded-lg border border-${c}-500/30 bg-${c}-500/10 text-xs font-bold text-${c}-400 transition-all hover:scale-105`;
+  const style = activeStyles[sev] || activeStyles.high;
+  btn.className = `sev-btn active p-2 rounded-lg border ${style} text-xs font-bold transition-all hover:scale-105`;
 }
 
 // ============ LOCATION AUTOCOMPLETE ============
@@ -370,18 +435,58 @@ async function drawRoute(rLat, rLng, type) {
   try {
     const url = `https://router.project-osrm.org/route/v1/driving/${selectedLng},${selectedLat};${rLng},${rLat}?overview=full&geometries=geojson`;
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`OSRM HTTP error ${res.status}`);
     const data = await res.json();
     if (data.routes && data.routes[0]) {
       const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
       const line = L.polyline(coords, { color: colors[type] || '#8b5cf6', weight: 3, opacity: 0.7, dashArray: '8,8' }).addTo(map);
       routeLines.push(line);
+      return;
     }
+    throw new Error('No OSRM route geometry returned');
   } catch(e) {
-    // Fallback: straight line
-    const line = L.polyline([[selectedLat, selectedLng], [rLat, rLng]], { color: colors[type] || '#8b5cf6', weight: 2, opacity: 0.5, dashArray: '6,10' }).addTo(map);
+    // Fallback: straight trajectory between coordinates
+    const line = L.polyline([[selectedLat, selectedLng], [rLat, rLng]], { color: colors[type] || '#8b5cf6', weight: 2, opacity: 0.6, dashArray: '6,10' }).addTo(map);
     routeLines.push(line);
   }
 }
+
+// ============ AUTO-DISPATCH URL INGESTION ============
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const type = params.get('type');
+  const sev = params.get('severity') || 'critical';
+  const lat = params.get('lat');
+  const lng = params.get('lng');
+
+  if (type) {
+    const btn = document.querySelector(`.dtype-btn[onclick*="${type}"]`);
+    if (btn) selectType(btn, type);
+    
+    const sevBtn = document.querySelector(`.sev-btn[onclick*="${sev}"]`);
+    if (sevBtn) selectSeverity(sevBtn, sev);
+
+    const defaultCoords = {
+      wildfire: { lat: 30.0668, lng: 79.0193, name: 'Chamoli Forest Zone, Uttarakhand' },
+      cyclone: { lat: 19.8135, lng: 85.8312, name: 'Puri Coastal Sector, Odisha' },
+      flood: { lat: 26.1445, lng: 91.7362, name: 'Brahmaputra Basin, Assam' }
+    };
+
+    const targetLat = lat ? parseFloat(lat) : (defaultCoords[type] ? defaultCoords[type].lat : null);
+    const targetLng = lng ? parseFloat(lng) : (defaultCoords[type] ? defaultCoords[type].lng : null);
+    const targetName = (defaultCoords[type]) ? defaultCoords[type].name : 'Incident Sector';
+
+    const banner = document.getElementById('incident-banner');
+    if (banner) banner.classList.remove('hidden');
+
+    if (targetLat && targetLng) {
+      pickLocation(targetLat, targetLng, targetName);
+      setTimeout(() => {
+        allocateResources();
+      }, 700);
+    }
+  }
+});
 </script>
 </body>
 </html>

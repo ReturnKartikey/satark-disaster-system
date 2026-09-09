@@ -39,10 +39,10 @@ During large-scale humanitarian crises (cyclones, forest fires, flash floods), d
 
 - **🧠 Triple Disaster Detection Modules**:
   - **Cyclone Path & Eye Detection**: Analyzes geostationary infrared tiles to classify cyclonic vortices with **99.1% precision**.
-  - **Wildfire Tracking & Assessment**: Identifies active fire perimeters from thermal infrared and aerial surveillance with **98.9% accuracy**.
+  - **Wildfire Tracking & Assessment**: Identifies active fire perimeters from thermal infrared and aerial surveillance with **99.9% accuracy**.
   - **Flood Inundation Analysis**: Scans multispectral Sentinel-2 captures to detect severe surface waterlogging and submerged settlements (**81.9% accuracy**).
 - **🔍 Explainable AI (Grad-CAM)**: Generates bilinear attention heatmaps overlaying raw satellite feeds, ensuring commanders can audit *why* a hazard was flagged.
-- **🗺️ Watermark-Free Tactical Mapping**: Integrated **Esri Dark Gray Canvas** GIS basemap (Base + Reference layers) optimized for operations room dashboards without third-party API dependencies.
+- **🗺️ High-Performance Tactical GIS**: Keyless **CartoDB Dark Matter** tactical basemap with live **OSRM vehicle routing** and depot dispatching without third-party API dependencies.
 - **⚡ Autonomous Resource Dispatch**: Haversine distance and speed-factored routing across a regional database of trauma centers, rescue units, and fire stations.
 - **🚀 One-Click Sample Demos**: Instant testing chips embedded under every upload zone for fast evaluation without requiring local image files.
 - **💎 Glassmorphic Operations UI**: Minimalist, fluid, dark-mode interface built with Tailwind CSS, backdrop filters, and zero visual clutter.
@@ -102,7 +102,7 @@ The Vision Transformers are fine-tuned on dedicated disaster datasets using PyTo
 | Hazard Pipeline | Model Architecture | Parameters | Input Resolution | Test Accuracy / Precision | Device Latency (CUDA) |
 | :--- | :--- | :---: | :---: | :---: | :---: |
 | **Cyclone Detection** | `ViT-B/16` (Fine-tuned) | 86.4M | 224 × 224 | **99.1%** | ~71 ms |
-| **Wildfire Tracking** | `ViT-B/16` (Fine-tuned) | 86.4M | 224 × 224 | **98.9%** | ~75 ms |
+| **Wildfire Tracking** | `ViT-B/16` (Fine-tuned) | 86.4M | 224 × 224 | **99.9%** | ~75 ms |
 | **Flood Inundation** | `ViT-B/16` (Fine-tuned) | 86.4M | 224 × 224 | **81.9%** | ~73 ms |
 
 > Performance logs, confusion matrix plots, and metrics are automatically logged in `cyclone_final_metrics.txt`, `wildfire2_metrics.txt`, and `flood2_metrics.txt`.
@@ -142,7 +142,7 @@ flowchart TB
 
     subgraph UI ["4. Tactical Command Center"]
         DASH["Glassmorphic Web Interface"]
-        MAP["Esri Dark Gray GIS Map"]
+        MAP["CartoDB Dark Matter GIS Map"]
         TRIAGE["Autonomous Incident Dispatch & Alerting"]
     end
 
@@ -167,17 +167,17 @@ satark-disaster-system/
 │   ├── flood.html                 # Flood inundation analysis module
 │   ├── wildfire.html              # Wildfire perimeter tracking module
 │   ├── cyclone.html               # Cyclone vortex detection module
-│   └── resources.html             # Esri Dark Gray GIS resource routing hub
+│   └── resources.html             # CartoDB Dark Matter GIS resource routing hub
 ├── assets/
 │   ├── sat1.png                   # Homepage Command Center screenshot
 │   ├── sat2.png                   # Flood analysis screenshot
 │   ├── sat3.png                   # Wildfire tracking screenshot
 │   ├── sat4.png                   # Cyclone detection screenshot
 │   ├── la.png                     # Tactical map routing screenshot
-│   └── samples/                   # One-click demo images for live testing
-│       ├── flood_sample.jpg
-│       ├── wildfire_sample.jpg
-│       └── cyclone_sample.jpg
+│   └── samples/                   # 12 one-click demo satellite images for live testing
+│       ├── flood_1.jpg, flood_2.jpg, non_flood_1.jpg, non_flood_2.jpg
+│       ├── fire_1.jpg, fire_2.jpg, non_fire_1.jpg, non_fire_2.jpg
+│       └── cyclone_1.jpg, cyclone_2.jpg, non_cyclone_1.jpg, non_cyclone_2.jpg
 ├── app.py                         # Root entry point proxy
 ├── run_project.py                 # 1-click startup automation script
 ├── requirements.txt               # Unified project dependencies
@@ -187,7 +187,7 @@ satark-disaster-system/
 ├── train_vit_flood2.py            # Flood ViT training script
 ├── train_vit_wildfire2.py         # Wildfire ViT training script
 ├── evaluate_cyclone.py            # Evaluation & confusion matrix script
-└── evaluate_wildfire.py           # Evaluation script for wildfire models
+└── evaluate_wildfire2.py          # Evaluation script for wildfire models
 ```
 
 ---
@@ -220,10 +220,10 @@ pip install -r requirements.txt
 ```
 
 ### 4. Setup Model Weights
-Because GitHub limits single files to 100MB, place the pre-trained `.pth` models (~343MB each) in the project root directory:
-- `vit_flood2_model.pth`
-- `vit_wildfire2_model.pth`
-- `vit_cyclone_model.pth`
+Because GitHub limits single files to 100MB, place the pre-trained `.pth` models (~343MB each) in their respective locations:
+- `vit_flood2_model.pth` (project root)
+- `Burn/vit_wildfire_model.pth` (in `Burn/` directory)
+- `vit_cyclone_model.pth` (project root)
 
 *(If running without local weights, the server will start gracefully and notify you of missing checkpoints).*
 
@@ -344,7 +344,7 @@ python train_vit_wildfire2.py
 To run complete evaluation with ROC curves and confusion matrices:
 ```bash
 python evaluate_cyclone.py
-python evaluate_wildfire.py
+python evaluate_wildfire2.py
 ```
 
 ---
@@ -353,7 +353,7 @@ python evaluate_wildfire.py
 
 - **Model Backbone**: [Google Research Vision Transformer (ViT)](https://github.com/google-research/vision_transformer) hosted via [Hugging Face Transformers](https://huggingface.co/google/vit-base-patch16-224-in21k).
 - **Explainability**: [PyTorch Grad-CAM](https://github.com/jacobgil/pytorch-grad-cam) for self-attention attribution.
-- **Cartography**: [Esri ArcGIS Canvas Basemaps](https://www.esri.com/) and [Leaflet.js](https://leafletjs.com/).
+- **Cartography & Routing**: [CartoDB Dark Matter GIS Basemap](https://carto.com/basemaps), [OpenStreetMap](https://www.openstreetmap.org/), [Leaflet.js](https://leafletjs.com/), and [OSRM](https://project-osrm.org/).
 
 ---
 

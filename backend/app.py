@@ -10,7 +10,7 @@ from flask import Flask, request, jsonify, render_template, url_for
 from flask_cors import CORS
 from torchvision import transforms
 from transformers import ViTForImageClassification
-from PIL import Image
+from PIL import Image, ImageOps, UnidentifiedImageError
 
 try:
     from pytorch_grad_cam import GradCAM
@@ -29,6 +29,7 @@ ASSETS_DIR = os.path.join(PROJECT_ROOT, "assets")
 app = Flask(__name__, template_folder=TEMPLATE_DIR, static_folder=ASSETS_DIR, static_url_path='/assets')
 CORS(app)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB upload limit to prevent OOM DOS
 
 # ============================================================
 # Image Transforms
@@ -54,8 +55,8 @@ MODEL_CONFIG = {
         "transform": TRANSFORM_NORMALIZED,
     },
     "wildfire": {
-        "path": os.path.join(PROJECT_ROOT, "vit_wildfire2_model.pth"),
-        "classes": ["fire", "nofire"],
+        "path": os.path.join(PROJECT_ROOT, "Burn", "vit_wildfire_model.pth"),
+        "classes": ["nofire", "fire"],
         "transform": TRANSFORM_STANDARD,
     },
     "cyclone": {
@@ -123,12 +124,23 @@ if GRADCAM_AVAILABLE:
             print(f"[SATARK] GradCAM init failed for {name}: {e}")
 
 def generate_heatmap(model_name, image, input_tensor):
-    if not GRADCAM_AVAILABLE or model_name not in cam_objects:
+    if not GRADCAM_AVAILABLE or model_name not in models:
         return None
     try:
+        current_model = models[model_name]
+        model_device = next(current_model.parameters()).device
+        cam = cam_objects.get(model_name)
+        # Re-wrap if device changed (e.g. during CPU fallback) or not yet created
+        if cam is None or getattr(cam, "_target_device", None) != model_device:
+            wrapped = ViTWrapper(current_model)
+            target_layers = [current_model.vit.encoder.layer[-1].layernorm_before]
+            cam = GradCAM(model=wrapped, target_layers=target_layers, reshape_transform=reshape_transform)
+            cam._target_device = model_device
+            cam_objects[model_name] = cam
+
         img_resized = image.resize((224, 224))
         rgb_float = np.float32(img_resized) / 255.0
-        grayscale_cam = cam_objects[model_name](input_tensor=input_tensor, targets=None)[0, :]
+        grayscale_cam = cam(input_tensor=input_tensor, targets=None)[0, :]
         viz = show_cam_on_image(rgb_float, grayscale_cam, use_rgb=True)
         out_pil = Image.fromarray(viz)
         if hasattr(image, 'size') and out_pil.size != image.size:
@@ -171,9 +183,23 @@ def resources_page():
 @app.route("/api/samples", methods=["GET"])
 def get_samples():
     return jsonify({
-        "flood": "/assets/samples/flood_sample.jpg",
-        "wildfire": "/assets/samples/wildfire_sample.jpg",
-        "cyclone": "/assets/samples/cyclone_sample.jpg"
+        "flood": "/assets/samples/flood_1.jpg",
+        "wildfire": "/assets/samples/fire_1.jpg",
+        "cyclone": "/assets/samples/cyclone_1.jpg",
+        "catalog": {
+            "flood": {
+                "positive": ["/assets/samples/flood_1.jpg", "/assets/samples/flood_2.jpg"],
+                "negative": ["/assets/samples/non_flood_1.jpg", "/assets/samples/non_flood_2.jpg"]
+            },
+            "wildfire": {
+                "positive": ["/assets/samples/fire_1.jpg", "/assets/samples/fire_2.jpg"],
+                "negative": ["/assets/samples/non_fire_1.jpg", "/assets/samples/non_fire_2.jpg"]
+            },
+            "cyclone": {
+                "positive": ["/assets/samples/cyclone_1.jpg", "/assets/samples/cyclone_2.jpg"],
+                "negative": ["/assets/samples/non_cyclone_1.jpg", "/assets/samples/non_cyclone_2.jpg"]
+            }
+        }
     })
 
 @app.route("/api/predict/<disaster_type>", methods=["POST"])
@@ -188,19 +214,39 @@ def predict(disaster_type):
     if file.filename == "":
         return jsonify({"error": "Empty filename."}), 400
 
+    image_bytes = file.read()
+    if not image_bytes:
+        return jsonify({"error": "Uploaded image file is empty."}), 400
+
+    try:
+        raw_image = Image.open(io.BytesIO(image_bytes))
+        image = ImageOps.exif_transpose(raw_image).convert("RGB")
+    except (UnidentifiedImageError, OSError, ValueError):
+        return jsonify({"error": "Invalid or corrupted image format. Please upload a standard JPEG or PNG image."}), 400
+
     try:
         t0 = time.perf_counter()
-        image_bytes = file.read()
-        image = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         cfg = MODEL_CONFIG[disaster_type]
         classes = cfg["classes"]
         img_transform = cfg.get("transform", TRANSFORM_STANDARD)
-        input_tensor = img_transform(image).unsqueeze(0).to(device)
-
-        with torch.no_grad():
-            outputs = models[disaster_type](input_tensor)
-            probabilities = torch.softmax(outputs.logits, dim=1)
-            confidence, predicted = torch.max(probabilities, 1)
+        try:
+            input_tensor = img_transform(image).unsqueeze(0).to(device)
+            with torch.no_grad():
+                outputs = models[disaster_type](input_tensor)
+                probabilities = torch.softmax(outputs.logits, dim=1)
+                confidence, predicted = torch.max(probabilities, 1)
+        except RuntimeError as rt_err:
+            if "CUDA" in str(rt_err) or "cuda" in str(rt_err):
+                print(f"[SATARK] CUDA error during inference, falling back to CPU: {rt_err}")
+                cpu_device = torch.device("cpu")
+                models[disaster_type] = models[disaster_type].to(cpu_device)
+                input_tensor = img_transform(image).unsqueeze(0).to(cpu_device)
+                with torch.no_grad():
+                    outputs = models[disaster_type](input_tensor)
+                    probabilities = torch.softmax(outputs.logits, dim=1)
+                    confidence, predicted = torch.max(probabilities, 1)
+            else:
+                raise rt_err
 
         predicted_class = classes[predicted.item()]
         confidence_score = round(confidence.item() * 100, 2)
@@ -211,7 +257,11 @@ def predict(disaster_type):
         # Generate Explainable AI Heatmap (Grad-CAM)
         heatmap_data = generate_heatmap(disaster_type, image, input_tensor)
 
+        if torch.cuda.is_available():
+            torch.cuda.synchronize()
+
         t_elapsed = round((time.perf_counter() - t0) * 1000, 1)
+        active_device = "CPU" if input_tensor.device.type == "cpu" else str(device).upper()
 
         return jsonify({
             "model": disaster_type,
@@ -220,11 +270,13 @@ def predict(disaster_type):
             "probabilities": probs_dict,
             "heatmap": heatmap_data,
             "latency_ms": t_elapsed,
-            "device": str(device).upper(),
+            "device": active_device,
             "backbone": "ViT-B/16 (86.4M Params)"
         })
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        import traceback
+        traceback.print_exc()
+        return jsonify({"error": f"Prediction failed: {str(e)}"}), 500
 
 
 @app.route("/favicon.ico")
@@ -280,6 +332,24 @@ RESOURCE_DB = [
     {"name": "SDRF West Bengal", "type": "rescue_team", "lat": 22.5800, "lng": 88.3700},
     {"name": "SDRF Tamil Nadu", "type": "rescue_team", "lat": 13.0600, "lng": 80.2500},
     {"name": "SDRF Karnataka", "type": "rescue_team", "lat": 12.9800, "lng": 77.5800},
+    {"name": "AIIMS Rishikesh Trauma Centre", "type": "hospital", "lat": 30.0760, "lng": 78.2880},
+    {"name": "SDRF Uttarakhand - Jolly Grant", "type": "rescue_team", "lat": 30.1890, "lng": 78.1800},
+    {"name": "Dehradun City Fire Station", "type": "fire_station", "lat": 30.3165, "lng": 78.0322},
+    {"name": "SMS Hospital Jaipur", "type": "hospital", "lat": 26.8918, "lng": 75.8164},
+    {"name": "Jaipur Central Fire Station", "type": "fire_station", "lat": 26.9220, "lng": 75.7788},
+    {"name": "NDRF Battalion 6 - Vadodara", "type": "ndrf", "lat": 22.3072, "lng": 73.1812},
+    {"name": "Civil Hospital Ahmedabad", "type": "hospital", "lat": 23.0525, "lng": 72.5934},
+    {"name": "Ahmedabad Fire HQ", "type": "fire_station", "lat": 23.0225, "lng": 72.5714},
+    {"name": "AIIMS Bhubaneswar", "type": "hospital", "lat": 20.2312, "lng": 85.7758},
+    {"name": "Bhubaneswar Fire Station", "type": "fire_station", "lat": 20.2961, "lng": 85.8245},
+    {"name": "KGMU Trauma Centre Lucknow", "type": "hospital", "lat": 26.8690, "lng": 80.9160},
+    {"name": "Lucknow Fire Station", "type": "fire_station", "lat": 26.8467, "lng": 80.9462},
+    {"name": "AIIMS Bhopal Trauma Centre", "type": "hospital", "lat": 23.2065, "lng": 77.4601},
+    {"name": "Bhopal Central Fire Brigade", "type": "fire_station", "lat": 23.2599, "lng": 77.4126},
+    {"name": "Guwahati Medical College Hospital", "type": "hospital", "lat": 26.1584, "lng": 91.7725},
+    {"name": "Assam State Fire Service HQ", "type": "fire_station", "lat": 26.1850, "lng": 91.7539},
+    {"name": "Aster Medcity Kochi", "type": "hospital", "lat": 10.0520, "lng": 76.2730},
+    {"name": "Ernakulam Fire Station", "type": "fire_station", "lat": 9.9816, "lng": 76.2999},
 ]
 
 def haversine(lat1, lon1, lat2, lon2):
@@ -293,33 +363,65 @@ def haversine(lat1, lon1, lat2, lon2):
 def allocate_resources():
     data = request.get_json()
     if not data or "lat" not in data or "lng" not in data:
-        return jsonify({"error": "lat and lng are required."}), 400
+        return jsonify({"error": "Latitude ('lat') and longitude ('lng') are required."}), 400
 
-    lat = float(data["lat"])
-    lng = float(data["lng"])
-    severity = data.get("severity", "high")
-    disaster_type = data.get("disaster_type", "flood")
+    try:
+        lat = float(data["lat"])
+        lng = float(data["lng"])
+    except (ValueError, TypeError):
+        return jsonify({"error": "Latitude and longitude must be valid numeric floating-point values."}), 400
+
+    if not (-90.0 <= lat <= 90.0 and -180.0 <= lng <= 180.0):
+        return jsonify({"error": "Coordinates out of bounds. Latitude must be between -90 and 90, Longitude between -180 and 180."}), 400
+
+    severity = str(data.get("severity", "high")).lower()
+    disaster_type = str(data.get("disaster_type", "flood")).lower()
 
     max_resources = {"low": 4, "medium": 6, "high": 9, "critical": 14}.get(severity, 8)
     search_radius = {"low": 80, "medium": 150, "high": 300, "critical": 500}.get(severity, 200)
 
+    # Dynamic type prioritization weights (lower weight ranks higher for that disaster)
+    TYPE_WEIGHTS = {
+        "wildfire": {"fire_station": 0.5, "ndrf": 0.75, "ambulance": 0.95, "hospital": 1.0, "rescue_team": 1.1},
+        "flood": {"rescue_team": 0.5, "ndrf": 0.65, "ambulance": 0.9, "hospital": 1.0, "fire_station": 1.3},
+        "cyclone": {"ndrf": 0.55, "rescue_team": 0.7, "hospital": 0.8, "ambulance": 0.9, "fire_station": 1.2}
+    }
+    active_weights = TYPE_WEIGHTS.get(disaster_type, {})
+
     scored = []
+    all_scored = []
     for r in RESOURCE_DB:
         dist = haversine(lat, lng, r["lat"], r["lng"])
+        weight = active_weights.get(r["type"], 1.0)
+        effective_score = dist * weight
+        speed = 45
+        eta = round((dist / speed) * 60)
+        entry = {
+            "name": r["name"],
+            "type": r["type"],
+            "lat": r["lat"],
+            "lng": r["lng"],
+            "distance_km": round(dist, 1),
+            "effective_score": effective_score,
+            "eta_minutes": max(eta, 3),
+        }
+        all_scored.append(entry)
         if dist <= search_radius:
-            speed = 45
-            eta = round((dist / speed) * 60)
-            scored.append({
-                "name": r["name"],
-                "type": r["type"],
-                "lat": r["lat"],
-                "lng": r["lng"],
-                "distance_km": round(dist, 1),
-                "eta_minutes": max(eta, 3),
-            })
+            scored.append(entry)
 
-    scored.sort(key=lambda x: x["distance_km"])
+    # Sort prioritizing relevant hazard unit types
+    scored.sort(key=lambda x: x["effective_score"])
+    if len(scored) < 4:
+        all_scored.sort(key=lambda x: x["effective_score"])
+        scored = all_scored[:max(4, max_resources)]
+
     selected = scored[:max_resources]
+    # Remove internal effective_score from public payload
+    for item in selected:
+        item.pop("effective_score", None)
+
+    closest_dist = selected[0]["distance_km"] if selected else 0
+    is_domestic = closest_dist <= 1500
 
     return jsonify({
         "disaster_type": disaster_type,
@@ -327,6 +429,8 @@ def allocate_resources():
         "location": {"lat": lat, "lng": lng},
         "resources": selected,
         "total_available": len(scored),
+        "is_domestic": is_domestic,
+        "notice": None if is_domestic else "Incident coordinates are outside the national emergency corridor. Local regional units must be mobilized."
     })
 
 
@@ -339,4 +443,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     print(f"[SATARK]  Open http://localhost:{port} in your browser")
     print("[SATARK] ===========================================\n")
-    app.run(host="0.0.0.0", port=port, debug=False)
+    app.run(host="0.0.0.0", port=port, debug=False, threaded=False)

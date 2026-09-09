@@ -39,79 +39,148 @@ tailwind.config = {
 </script>
 <style>
   html{scroll-behavior:smooth;}
+  *{
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:#0c0e10;}
+  ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:9999px;border:2px solid #0c0e10;}
+  ::-webkit-scrollbar-thumb:hover{background:#334155;}
+
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
   .atmospheric-shadow{box-shadow:0px 25px 50px -12px rgba(0,0,0,0.7);}
   body{background-color:#0c0e10;color:#e2e2e5;font-family:'Inter',sans-serif;overflow-x:hidden;}
   .hero-fade{background:radial-gradient(circle at center, rgba(18,20,22,0.6) 0%, rgba(12,14,16,0.98) 85%);}
 
-  /* Fluid Animations */
+  /* Fluid Entrance Animations */
   @keyframes fadeSlideUp{
-    0%{opacity:0;transform:translateY(28px) scale(0.98);}
-    100%{opacity:1;transform:translateY(0) scale(1);}
+    0%{opacity:0;transform:translate3d(0, 24px, 0) scale(0.98);}
+    100%{opacity:1;transform:translate3d(0, 0, 0) scale(1);}
   }
-  @keyframes ambientGlow{
-    0%,100%{opacity:0.35;transform:scale(1) translate(0, 0);}
-    50%{opacity:0.6;transform:scale(1.12) translate(20px, -20px);}
+  .animate-fade-up{
+    animation:fadeSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;
+    will-change:transform, opacity;
   }
-  .animate-fade-up{animation:fadeSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) both;}
-  .delay-1{animation-delay:0.1s;}
-  .delay-2{animation-delay:0.2s;}
-  .delay-3{animation-delay:0.3s;}
-  .delay-4{animation-delay:0.4s;}
+  .delay-1{animation-delay:0.08s;}
+  .delay-2{animation-delay:0.16s;}
+  .delay-3{animation-delay:0.24s;}
+  .delay-4{animation-delay:0.32s;}
 
+  /* Silky Smooth GPU Ambient Lights */
+  @keyframes floatSlow1 {
+    0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
+    33% { transform: translate3d(45px, -40px, 0) scale(1.08); }
+    66% { transform: translate3d(-35px, 30px, 0) scale(0.96); }
+  }
+  @keyframes floatSlow2 {
+    0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
+    33% { transform: translate3d(-50px, 40px, 0) scale(1.1); }
+    66% { transform: translate3d(35px, -30px, 0) scale(0.94); }
+  }
+  @keyframes floatSlow3 {
+    0%, 100% { transform: translate3d(0px, 0px, 0) scale(1); }
+    50% { transform: translate3d(40px, 35px, 0) scale(1.12); }
+  }
+
+  .glow-orb-1, .glow-orb-2, .glow-orb-3 {
+    will-change: transform;
+    pointer-events: none;
+  }
   .glow-orb-1{
-    position:absolute;width:550px;height:550px;border-radius:50%;
+    position:absolute;width:620px;height:620px;border-radius:50%;
     background:radial-gradient(circle, rgba(14,165,233,0.18) 0%, transparent 70%);
-    filter:blur(60px);pointer-events:none;animation:ambientGlow 12s ease-in-out infinite;
+    filter:blur(80px);animation:floatSlow1 20s ease-in-out infinite;
   }
   .glow-orb-2{
-    position:absolute;width:500px;height:500px;border-radius:50%;
-    background:radial-gradient(circle, rgba(249,115,22,0.15) 0%, transparent 70%);
-    filter:blur(60px);pointer-events:none;animation:ambientGlow 14s ease-in-out infinite reverse;
+    position:absolute;width:560px;height:560px;border-radius:50%;
+    background:radial-gradient(circle, rgba(249,115,22,0.13) 0%, transparent 70%);
+    filter:blur(80px);animation:floatSlow2 24s ease-in-out infinite;
+  }
+  .glow-orb-3{
+    position:absolute;width:520px;height:520px;border-radius:50%;
+    background:radial-gradient(circle, rgba(16,185,129,0.12) 0%, transparent 70%);
+    filter:blur(80px);animation:floatSlow3 22s ease-in-out infinite;
   }
 
+  /* Fluid Micro-Interactions */
   .interactive-card{
-    transition:all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease;
+    will-change: transform, box-shadow;
   }
   .interactive-card:hover{
-    transform:translateY(-6px) scale(1.02);
-    box-shadow:0 25px 45px -12px rgba(0,0,0,0.8);
+    transform: translateY(-6px) scale(1.015);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.85);
+  }
+  .interactive-card:active{
+    transform: translateY(-2px) scale(0.99);
+  }
+
+  .metric-card{
+    transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, box-shadow 0.3s ease;
+    will-change: transform;
+  }
+  .metric-card:hover{
+    transform: translateY(-3px);
+    box-shadow: 0 16px 32px -8px rgba(0,0,0,0.5);
+  }
+
+  .btn-fluid{
+    transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.2s ease, border-color 0.2s ease;
+    will-change: transform;
+  }
+  .btn-fluid:hover{
+    transform: translateY(-2px) scale(1.03);
+  }
+  .btn-fluid:active{
+    transform: translateY(0px) scale(0.97);
   }
 </style>
 </head>
 <body class="selection:bg-primary-container selection:text-on-primary-container">
 
 <!-- Top Nav -->
-<header class="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 group">
-      <span class="text-xl font-black tracking-wider text-slate-100 font-headline group-hover:text-sky-400 transition-colors">SATARK</span>
+<header class="fixed top-0 w-full z-50 bg-slate-950/50 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2.5 group">
+      <span class="text-2xl font-black tracking-wider text-slate-100 font-headline group-hover:text-sky-400 transition-colors">SATARK</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-900/40 border border-slate-800/50 rounded-xl">
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/flood">Flood Analysis</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/wildfire">Wildfire Tracking</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/cyclone">Cyclone Path</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/resources">Resource Map</a>
+    <nav class="hidden md:flex items-center gap-2 p-1.5 bg-slate-900/50 border border-slate-800/60 rounded-2xl shadow-inner">
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/flood">Flood Analysis</a>
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/wildfire">Wildfire Tracking</a>
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/cyclone">Cyclone Path</a>
     </nav>
 
     <div class="flex items-center gap-3">
-      <a href="/resources" class="px-3.5 py-1.5 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl text-xs font-bold transition-all hover:scale-105 flex items-center gap-1.5 shadow-sm">
-        <span class="material-symbols-outlined text-sm">emergency</span> Operations Center
+      <a href="/resources" class="px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-base">emergency</span> <span class="hidden sm:inline">Operations Center</span>
       </a>
+      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white" aria-label="Toggle Menu">
+        <span class="material-symbols-outlined text-xl">menu</span>
+      </button>
     </div>
+  </div>
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-nav" class="hidden md:hidden px-6 pb-4 pt-2 bg-slate-950/95 border-b border-slate-800 space-y-2">
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/flood">Flood Analysis</a>
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/wildfire">Wildfire Tracking</a>
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/cyclone">Cyclone Path</a>
+    <a class="block px-3 py-2 text-sm font-bold rounded-lg text-sky-400 bg-sky-500/15 border border-sky-500/30" href="/resources">Operations Center</a>
   </div>
 </header>
 
-<main class="pt-16 relative">
+<main class="pt-20 relative overflow-hidden">
   <!-- Glowing Ambient Lights -->
   <div class="glow-orb-1 top-20 left-1/4"></div>
   <div class="glow-orb-2 top-40 right-1/4"></div>
+  <div class="glow-orb-3 top-96 left-1/2 -translate-x-1/2"></div>
 
   <!-- Hero -->
   <section class="relative min-h-[85vh] flex flex-col items-center justify-center px-6 py-20 overflow-hidden">
-    <div class="absolute inset-0 z-0 opacity-30">
-      <img class="w-full h-full object-cover grayscale" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAWM3CUtTNb0RoQ-Y3m0OEqxWPAnZZxo9p8QeaM5Q6UeDH8RCkLU-ENAaIP0y5VlRo3kcRdd_yvLOtVXtnoxYhImdwiWbqqgC9y_jtwvxkvx8idknMyKZSPnfrbwZFuVdpORpYqUPC-K5j4hD1keToLQ1ct3V660Gq_ppGpst58JLI2Gre4PgO1PyFInWU_3EcImb49AqrOZw17HyziMFXoWG3c5mHPaU3F9jv-ywYQxjdffVPcqYC13ZdIdpQ-gpt6-m3LCh7m-hQr"/>
+    <div class="absolute inset-0 z-0 opacity-25">
+      <img class="w-full h-full object-cover grayscale opacity-30" src="/assets/sat1.png" alt="Satellite Telemetry Background"/>
       <div class="hero-fade absolute inset-0"></div>
     </div>
     <div class="relative z-10 text-center max-w-4xl mx-auto space-y-6 animate-fade-up">
@@ -122,42 +191,22 @@ tailwind.config = {
         Disaster Intelligence & Autonomous Emergency Logistics
       </p>
       <p class="font-body text-sm md:text-base text-slate-400 max-w-2xl mx-auto leading-relaxed">
-        Harnessing multispectral satellite imagery and Vision Transformers (ViT) to detect catastrophic floods, active wildfires, and cyclonic vortexes in real-time — dispatching emergency responders instantly.
+        Harnessing multispectral satellite imagery and Vision Transformers (ViT) to detect catastrophic floods, active wildfires, and cyclonic vortexes in real-time, dispatching emergency responders instantly.
       </p>
       <div class="flex flex-wrap items-center justify-center gap-4 pt-2">
-        <a href="/flood" class="px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider transition-all shadow-lg hover:shadow-sky-500/25 flex items-center gap-2 hover:scale-105">
+        <a href="/flood" class="btn-fluid px-6 py-3 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold text-xs uppercase tracking-wider shadow-lg hover:shadow-sky-500/25 flex items-center gap-2">
           <span>Explore Live Models</span>
           <span class="material-symbols-outlined text-sm">arrow_forward</span>
         </a>
-        <a href="/resources" class="px-6 py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs uppercase tracking-wider transition-all hover:scale-105 flex items-center gap-2 shadow-md">
+        <a href="/resources" class="btn-fluid px-6 py-3 rounded-xl bg-slate-900/80 hover:bg-slate-800 text-slate-200 border border-slate-700 font-bold text-xs uppercase tracking-wider flex items-center gap-2 shadow-md">
           <span class="material-symbols-outlined text-emerald-400 text-sm">emergency</span>
           <span>Resource Dispatch</span>
         </a>
       </div>
     </div>
 
-    <!-- Capabilities / Performance Strip -->
-    <div class="relative z-10 max-w-5xl mx-auto mt-14 px-4 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
-      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-cyan-500/30">
-        <p class="text-3xl font-black text-cyan-400 font-headline mb-1">99.1%</p>
-        <p class="text-xs text-slate-400 font-medium">Cyclone Precision</p>
-      </div>
-      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-orange-500/30">
-        <p class="text-3xl font-black text-orange-400 font-headline mb-1">98.9%</p>
-        <p class="text-xs text-slate-400 font-medium">Wildfire Accuracy</p>
-      </div>
-      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-sky-500/30">
-        <p class="text-3xl font-black text-sky-400 font-headline mb-1">81.9%</p>
-        <p class="text-xs text-slate-400 font-medium">Flood Detection</p>
-      </div>
-      <div class="bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center transition-all hover:border-emerald-500/30">
-        <p class="text-3xl font-black text-emerald-400 font-headline mb-1">&lt;100ms</p>
-        <p class="text-xs text-slate-400 font-medium">CUDA ViT Latency</p>
-      </div>
-    </div>
-
     <!-- 4 Interactive Cards -->
-    <div class="relative z-10 mt-12 grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl mx-auto px-4">
+    <div class="relative z-10 mt-14 grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-6xl mx-auto px-4">
       <a href="/flood" class="interactive-card animate-fade-up delay-1 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-sky-500/40">
         <div class="flex items-center justify-between mb-4">
           <span class="material-symbols-outlined text-sky-400 text-4xl group-hover:scale-110 transition-transform duration-300">tsunami</span>
@@ -206,6 +255,26 @@ tailwind.config = {
           <span class="material-symbols-outlined text-xs group-hover:translate-x-1 transition-transform">arrow_forward</span>
         </div>
       </a>
+    </div>
+
+    <!-- Capabilities / Performance Strip (Shifted below the 4 cards) -->
+    <div class="relative z-10 max-w-5xl mx-auto mt-12 mb-4 px-4 w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="metric-card bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center hover:border-cyan-500/40 cursor-default">
+        <p class="text-3xl font-black text-cyan-400 font-headline mb-1">99.1%</p>
+        <p class="text-xs text-slate-400 font-medium">Cyclone Precision</p>
+      </div>
+      <div class="metric-card bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center hover:border-orange-500/40 cursor-default">
+        <p class="text-3xl font-black text-orange-400 font-headline mb-1">99.9%</p>
+        <p class="text-xs text-slate-400 font-medium">Wildfire Accuracy</p>
+      </div>
+      <div class="metric-card bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center hover:border-sky-500/40 cursor-default">
+        <p class="text-3xl font-black text-sky-400 font-headline mb-1">81.9%</p>
+        <p class="text-xs text-slate-400 font-medium">Flood Detection</p>
+      </div>
+      <div class="metric-card bg-slate-900/60 backdrop-blur-md border border-slate-800/80 rounded-2xl p-5 text-center hover:border-emerald-500/40 cursor-default">
+        <p class="text-3xl font-black text-emerald-400 font-headline mb-1">&lt;100ms</p>
+        <p class="text-xs text-slate-400 font-medium">CUDA ViT Latency</p>
+      </div>
     </div>
   </section>
 
@@ -272,52 +341,43 @@ tailwind.config = {
 <!-- Footer -->
 <footer class="w-full bg-slate-950 border-t border-slate-800/60 text-slate-400">
   <div class="max-w-7xl mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-10 items-start">
       <!-- Col 1: Brand & Mission -->
-      <div class="md:col-span-1 space-y-3">
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-black tracking-wider text-slate-100 font-headline">SATARK</span>
+      <div class="md:col-span-5 space-y-3">
+        <div class="h-7 flex items-center">
+          <span class="text-xl font-black tracking-wider text-slate-100 font-headline leading-none">SATARK</span>
         </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
+        <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
           Advanced satellite-driven disaster detection and tactical emergency logistics engine, powered by explainable Vision Transformers.
         </p>
-        <div class="flex items-center gap-2 text-[11px] font-mono text-emerald-400 pt-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Inference Engine: Active</span>
+      </div>
+
+      <!-- Col 2: Detection Pipelines -->
+      <div class="md:col-span-3 lg:col-span-3 space-y-3">
+        <div class="h-7 flex items-center">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
         </div>
-      </div>
-
-      <!-- Col 2: Detection Intelligence -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
-        <ul class="space-y-2 text-xs">
-          <li><a href="/flood" class="hover:text-sky-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
-          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
-          <li><a href="/cyclone" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
-          <li><a href="/resources" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="/flood" class="hover:text-sky-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
+          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
+          <li><a href="/cyclone" class="hover:text-cyan-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
+          <li><a href="/resources" class="hover:text-emerald-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
         </ul>
       </div>
 
-      <!-- Col 3: Core Technology -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Architecture & Core</h4>
-        <ul class="space-y-1.5 text-xs text-slate-400 font-mono">
-          <li class="flex items-center justify-between"><span>Backbone:</span> <span class="text-slate-300">ViT-Base/16</span></li>
-          <li class="flex items-center justify-between"><span>Explainability:</span> <span class="text-slate-300">Grad-CAM (L-Norm)</span></li>
-          <li class="flex items-center justify-between"><span>Routing Engine:</span> <span class="text-slate-300">OSRM + OpenStreetMap</span></li>
-          <li class="flex items-center justify-between"><span>Compute Device:</span> <span class="text-slate-300">NVIDIA CUDA</span></li>
-        </ul>
-      </div>
-
-      <!-- Col 4: Protocols & Guidelines -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+      <!-- Col 3: Rapid Response -->
+      <div class="md:col-span-4 lg:col-span-4 space-y-3">
+        <div class="h-7 flex items-center">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+        </div>
         <p class="text-xs text-slate-400 leading-relaxed">
           Integrated directly with emergency depots to calculate shortest-path tactical rescue routes during critical humanitarian situations.
         </p>
-        <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors">
-          Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
-        </a>
+        <div>
+          <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-sky-400 hover:text-sky-300 transition-colors">
+            Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -331,5 +391,11 @@ tailwind.config = {
   </div>
 </footer>
 
+<script>
+  function toggleMobileMenu() {
+    const m = document.getElementById('mobile-nav');
+    if (m) m.classList.toggle('hidden');
+  }
+</script>
 </body>
 </html>

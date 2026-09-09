@@ -16,7 +16,7 @@ api = HfApi()
 
 files_to_upload = [
     "vit_flood2_model.pth",
-    "vit_wildfire2_model.pth",
+    os.path.join("Burn", "vit_wildfire_model.pth"),
     "vit_cyclone_model.pth"
 ]
 

@@ -16,45 +16,98 @@ tailwind.config={darkMode:"class",theme:{extend:{
 </script>
 <style>
   html{scroll-behavior:smooth;}
+  *{
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:#0c0e10;}
+  ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:9999px;border:2px solid #0c0e10;}
+  ::-webkit-scrollbar-thumb:hover{background:#334155;}
+
   body{font-family:'Inter',sans-serif;background-color:#0c0e10;color:#e2e2e5;}
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
   .atmospheric-shadow{box-shadow:0px 25px 50px -12px rgba(0,0,0,0.8);}
-  .upload-zone{transition:all 0.35s cubic-bezier(0.16, 1, 0.3, 1);}
-  .upload-zone:hover{border-color:rgba(6,182,212,0.6);background:rgba(30,32,34,0.9);transform:translateY(-2px);}
-  .upload-zone.dragover{border-color:#06b6d4;background:rgba(6,182,212,0.1);transform:scale(1.01);}
   
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
-  .animate-fade-up{animation:fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
-  .result-card{animation:fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
-  .fade-in{animation:fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
+  .upload-zone{
+    transition:transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.3s ease, background-color 0.3s ease, box-shadow 0.3s ease;
+    will-change:transform;
+  }
+  .upload-zone:hover{
+    border-color:rgba(6,182,212,0.6);
+    background:rgba(30,32,34,0.9);
+    transform:translateY(-3px);
+    box-shadow:0 16px 32px -8px rgba(0,0,0,0.6);
+  }
+  .upload-zone:active{
+    transform:translateY(-1px) scale(0.99);
+  }
+  .upload-zone.dragover{
+    border-color:#06b6d4;
+    background:rgba(6,182,212,0.12);
+    transform:scale(1.015);
+    box-shadow:0 20px 40px -10px rgba(6,182,212,0.3);
+  }
+  
+  @keyframes fadeSlideUp{
+    from{opacity:0;transform:translate3d(0, 16px, 0) scale(0.985);}
+    to{opacity:1;transform:translate3d(0, 0, 0) scale(1);}
+  }
+  .animate-fade-up{
+    animation:fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change:transform, opacity;
+  }
+  .result-card, .fade-in{
+    animation:fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change:transform, opacity;
+  }
   @keyframes radarSweep{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
   .radar-sweep{animation:radarSweep 2s linear infinite;}
 
-  .sample-btn{transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1);}
-  .sample-btn:hover{transform:translateY(-2px) scale(1.03);box-shadow:0 10px 20px -5px rgba(6,182,212,0.25);}
+  .sample-btn{
+    transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease;
+    will-change:transform;
+  }
+  .sample-btn:hover{
+    transform:translateY(-2px) scale(1.03);
+    box-shadow:0 10px 20px -5px rgba(6,182,212,0.25);
+  }
+  .sample-btn:active{
+    transform:translateY(0px) scale(0.96);
+  }
 </style>
 </head>
 <body class="text-on-surface bg-background min-h-screen flex flex-col selection:bg-cyan-500/20 selection:text-cyan-400">
 
 <!-- Top Nav -->
-<header class="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 group">
-      <span class="text-xl font-black tracking-wider text-slate-100 font-headline group-hover:text-cyan-400 transition-colors">SATARK</span>
+<header class="fixed top-0 w-full z-50 bg-slate-950/50 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2.5 group">
+      <span class="text-2xl font-black tracking-wider text-slate-100 font-headline group-hover:text-cyan-400 transition-colors">SATARK</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-900/40 border border-slate-800/50 rounded-xl">
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/flood">Flood Analysis</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/wildfire">Wildfire Tracking</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 shadow-sm font-bold" href="/cyclone">Cyclone Path</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/resources">Resource Map</a>
+    <nav class="hidden md:flex items-center gap-2 p-1.5 bg-slate-900/50 border border-slate-800/60 rounded-2xl shadow-inner">
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/flood">Flood Analysis</a>
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/wildfire">Wildfire Tracking</a>
+      <a class="px-4 py-2 text-sm font-bold rounded-xl bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 shadow-sm" href="/cyclone">Cyclone Path</a>
     </nav>
 
     <div class="flex items-center gap-3">
-      <a href="/resources" class="px-3.5 py-1.5 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl text-xs font-bold transition-all hover:scale-105 flex items-center gap-1.5 shadow-sm">
-        <span class="material-symbols-outlined text-sm">emergency</span> Operations Center
+      <a href="/resources" class="px-4 py-2 bg-cyan-500/10 hover:bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-base">emergency</span> <span class="hidden sm:inline">Operations Center</span>
       </a>
+      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white" aria-label="Toggle Menu">
+        <span class="material-symbols-outlined text-xl">menu</span>
+      </button>
     </div>
+  </div>
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-nav" class="hidden md:hidden px-6 pb-4 pt-2 bg-slate-950/95 border-b border-slate-800 space-y-2">
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/flood">Flood Analysis</a>
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/wildfire">Wildfire Tracking</a>
+    <a class="block px-3 py-2 text-sm font-bold rounded-lg text-cyan-400 bg-cyan-500/15 border border-cyan-500/30" href="/cyclone">Cyclone Path</a>
+    <a class="block px-3 py-2 text-sm font-bold rounded-lg text-emerald-400 hover:bg-slate-800 transition-colors" href="/resources">Operations Center</a>
   </div>
 </header>
 
@@ -86,14 +139,17 @@ tailwind.config={darkMode:"class",theme:{extend:{
       <!-- One-Click Try Demo Samples -->
       <div class="flex flex-wrap items-center gap-2 pt-1">
         <span class="text-xs text-on-surface-variant font-medium mr-1">Quick Demo Samples:</span>
-        <button type="button" onclick="loadSample('/assets/samples/cyclone_sample.jpg', 'cyclone_sample.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-cyan-500/50 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
-          🌀 <span>Category Cyclone</span>
+        <button type="button" onclick="loadSample('/assets/samples/cyclone_1.jpg', 'cyclone_1.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-cyan-500/50 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+          🌀 <span>Cyclone 1</span>
         </button>
-        <button type="button" onclick="loadSample('/assets/samples/flood_sample.jpg', 'flood_sample.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
-          🌊 <span>Flood Sample</span>
+        <button type="button" onclick="loadSample('/assets/samples/cyclone_2.jpg', 'cyclone_2.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-cyan-500/50 hover:bg-cyan-500/10 hover:text-cyan-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+          🌀 <span>Cyclone 2</span>
         </button>
-        <button type="button" onclick="loadSample('/assets/samples/wildfire_sample.jpg', 'wildfire_sample.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-orange-500/50 hover:bg-orange-500/10 hover:text-orange-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
-          🔥 <span>Wildfire Sample</span>
+        <button type="button" onclick="loadSample('/assets/samples/non_cyclone_1.jpg', 'non_cyclone_1.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-300 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+          🌤️ <span>Non-Cyclone 1</span>
+        </button>
+        <button type="button" onclick="loadSample('/assets/samples/non_cyclone_2.jpg', 'non_cyclone_2.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-sky-400/50 hover:bg-sky-400/10 hover:text-sky-300 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+          🌤️ <span>Non-Cyclone 2</span>
         </button>
       </div>
 
@@ -101,8 +157,8 @@ tailwind.config={darkMode:"class",theme:{extend:{
       <div id="preview-section" class="hidden fade-in">
         <div class="bg-surface-container rounded-2xl overflow-hidden atmospheric-shadow border border-outline-variant/10">
           <div class="relative bg-slate-950 flex items-center justify-center h-80 overflow-hidden">
-            <img id="preview-img" class="w-full h-full object-contain transition-opacity duration-300"/>
-            <img id="heatmap-img" class="w-full h-full object-contain transition-opacity duration-300 hidden"/>
+            <img id="preview-img" class="w-full h-full object-contain transition-opacity duration-500 ease-in-out opacity-100"/>
+            <img id="heatmap-img" class="w-full h-full object-contain transition-opacity duration-500 ease-in-out opacity-0 absolute inset-0 pointer-events-none"/>
             
             <!-- XAI Heatmap Toggle Pills -->
             <div id="xai-toggle-container" class="hidden absolute top-3 right-3 bg-slate-900/90 backdrop-blur-md rounded-xl p-1 border border-outline-variant/30 flex items-center gap-1 z-10 shadow-lg">
@@ -183,6 +239,18 @@ tailwind.config={darkMode:"class",theme:{extend:{
               <div id="result-bar" class="h-full rounded-full transition-all duration-1000 ease-out" style="width:0%"></div>
             </div>
           </div>
+
+          <!-- Inference Telemetry -->
+          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+            <div class="px-3 py-2 rounded-xl bg-surface-container border border-outline-variant/10 flex items-center justify-between text-slate-400">
+              <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-xs text-cyan-400">speed</span> LATENCY</span>
+              <span id="result-latency" class="text-cyan-400 font-bold">-- ms</span>
+            </div>
+            <div class="px-3 py-2 rounded-xl bg-surface-container border border-outline-variant/10 flex items-center justify-between text-slate-400">
+              <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-xs text-cyan-400">memory</span> ACCELERATOR</span>
+              <span id="result-device" class="text-slate-200 font-bold uppercase">--</span>
+            </div>
+          </div>
         </div>
 
         <!-- Automated Incident Bridge Card -->
@@ -194,9 +262,9 @@ tailwind.config={darkMode:"class",theme:{extend:{
           <p class="text-xs text-slate-300 leading-relaxed">
             Coastal SDRF units, Naval Amphibious Rescue, and Evacuation Ambulances staged for dynamic routing.
           </p>
-          <a id="dispatch-bridge-btn" href="/resources?type=cyclone&severity=critical&lat=19.8135&lng=85.8312" class="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl text-center shadow-lg hover:shadow-cyan-500/20 transition-all flex items-center justify-center gap-2">
-            <span class="material-symbols-outlined text-base">emergency</span>
-            Auto-Dispatch Responders to Incident
+          <a id="dispatch-bridge-btn" href="/resources?disaster=cyclone&lat=19.8135&lng=85.8312&severity=Critical" class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-400 hover:to-sky-500 text-slate-950 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-md">
+            <span>Route Emergency Units</span>
+            <span class="material-symbols-outlined text-sm">arrow_forward</span>
           </a>
         </div>
       </div>
@@ -224,52 +292,43 @@ tailwind.config={darkMode:"class",theme:{extend:{
 <!-- Footer -->
 <footer class="w-full bg-slate-950 border-t border-slate-800/60 text-slate-400 mt-auto">
   <div class="max-w-7xl mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-10 items-start">
       <!-- Col 1: Brand & Mission -->
-      <div class="md:col-span-1 space-y-3">
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-black tracking-wider text-slate-100 font-headline">SATARK</span>
+      <div class="md:col-span-5 space-y-3">
+        <div class="h-7 flex items-center">
+          <span class="text-xl font-black tracking-wider text-slate-100 font-headline leading-none">SATARK</span>
         </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
+        <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
           Advanced satellite-driven disaster detection and tactical emergency logistics engine, powered by explainable Vision Transformers.
         </p>
-        <div class="flex items-center gap-2 text-[11px] font-mono text-emerald-400 pt-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Inference Engine: Active</span>
+      </div>
+
+      <!-- Col 2: Detection Pipelines -->
+      <div class="md:col-span-3 lg:col-span-3 space-y-3">
+        <div class="h-7 flex items-center">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
         </div>
-      </div>
-
-      <!-- Col 2: Detection Intelligence -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
-        <ul class="space-y-2 text-xs">
-          <li><a href="/flood" class="hover:text-sky-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
-          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
-          <li><a href="/cyclone" class="text-cyan-400 font-semibold flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
-          <li><a href="/resources" class="hover:text-emerald-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="/flood" class="hover:text-sky-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
+          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
+          <li><a href="/cyclone" class="text-cyan-400 font-semibold inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
+          <li><a href="/resources" class="hover:text-emerald-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
         </ul>
       </div>
 
-      <!-- Col 3: Core Technology -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Architecture & Core</h4>
-        <ul class="space-y-1.5 text-xs text-slate-400 font-mono">
-          <li class="flex items-center justify-between"><span>Backbone:</span> <span class="text-slate-300">ViT-Base/16</span></li>
-          <li class="flex items-center justify-between"><span>Explainability:</span> <span class="text-slate-300">Grad-CAM (L-Norm)</span></li>
-          <li class="flex items-center justify-between"><span>Routing Engine:</span> <span class="text-slate-300">OSRM + OpenStreetMap</span></li>
-          <li class="flex items-center justify-between"><span>Compute Device:</span> <span class="text-slate-300">NVIDIA CUDA</span></li>
-        </ul>
-      </div>
-
-      <!-- Col 4: Protocols & Guidelines -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+      <!-- Col 3: Rapid Response -->
+      <div class="md:col-span-4 lg:col-span-4 space-y-3">
+        <div class="h-7 flex items-center">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+        </div>
         <p class="text-xs text-slate-400 leading-relaxed">
           Integrated directly with emergency depots to calculate shortest-path tactical rescue routes during critical humanitarian situations.
         </p>
-        <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
-          Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
-        </a>
+        <div>
+          <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors">
+            Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -288,6 +347,22 @@ const fileInput = document.getElementById('file-input');
 const uploadZone = document.getElementById('upload-zone');
 let currentHeatmapBase64 = null;
 
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-nav');
+  if (m) m.classList.toggle('hidden');
+}
+
+function setButtonsDisabled(disabled) {
+  document.querySelectorAll('.sample-btn').forEach(btn => {
+    btn.disabled = disabled;
+    if (disabled) {
+      btn.classList.add('opacity-50', 'pointer-events-none');
+    } else {
+      btn.classList.remove('opacity-50', 'pointer-events-none');
+    }
+  });
+}
+
 uploadZone.addEventListener('dragover', (e) => { e.preventDefault(); uploadZone.classList.add('dragover'); });
 uploadZone.addEventListener('dragleave', () => { uploadZone.classList.remove('dragover'); });
 uploadZone.addEventListener('drop', (e) => {
@@ -299,12 +374,15 @@ fileInput.addEventListener('change', (e) => { if (e.target.files[0]) handleFile(
 
 async function loadSample(url, filename) {
   try {
+    setButtonsDisabled(true);
     const res = await fetch(url);
     const blob = await res.blob();
     const file = new File([blob], filename, { type: blob.type || 'image/jpeg' });
-    handleFile(file);
+    await handleFile(file);
   } catch(err) {
     console.error('Failed to load sample image:', err);
+  } finally {
+    setButtonsDisabled(false);
   }
 }
 
@@ -315,22 +393,34 @@ function toggleHeatmap(view) {
   const camBtn = document.getElementById('view-cam-btn');
 
   if (view === 'cam' && currentHeatmapBase64) {
-    rawImg.classList.add('hidden');
-    heatImg.classList.remove('hidden');
+    rawImg.classList.add('opacity-0', 'pointer-events-none');
+    rawImg.classList.remove('opacity-100');
+    heatImg.classList.remove('opacity-0', 'pointer-events-none');
+    heatImg.classList.add('opacity-100');
     camBtn.className = 'px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition-all shadow-sm';
     rawBtn.className = 'px-3 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all';
   } else {
-    heatImg.classList.add('hidden');
-    rawImg.classList.remove('hidden');
+    heatImg.classList.add('opacity-0', 'pointer-events-none');
+    heatImg.classList.remove('opacity-100');
+    rawImg.classList.remove('opacity-0', 'pointer-events-none');
+    rawImg.classList.add('opacity-100');
     rawBtn.className = 'px-3 py-1 rounded-lg text-xs font-semibold bg-cyan-500 text-slate-950 transition-all shadow-sm';
     camBtn.className = 'px-3 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all';
   }
 }
 
 async function handleFile(file) {
+  toggleHeatmap('raw');
+  const rawImg = document.getElementById('preview-img');
+  const heatImg = document.getElementById('heatmap-img');
+  rawImg.classList.remove('opacity-0', 'pointer-events-none');
+  rawImg.classList.add('opacity-100');
+  heatImg.classList.add('opacity-0', 'pointer-events-none');
+  heatImg.classList.remove('opacity-100');
+
   const reader = new FileReader();
   reader.onload = (ev) => {
-    document.getElementById('preview-img').src = ev.target.result;
+    rawImg.src = ev.target.result;
     document.getElementById('preview-section').classList.remove('hidden');
   };
   reader.readAsDataURL(file);
@@ -341,6 +431,7 @@ async function handleFile(file) {
   document.getElementById('result-state').classList.add('hidden');
   document.getElementById('error-state').classList.add('hidden');
   document.getElementById('loading-state').classList.remove('hidden');
+  setButtonsDisabled(true);
 
   const formData = new FormData();
   formData.append('image', file);
@@ -364,6 +455,14 @@ async function handleFile(file) {
     const bar = document.getElementById('result-bar');
     bar.className = `h-full rounded-full transition-all duration-1000 ease-out ${isPositive ? 'bg-gradient-to-r from-cyan-500 to-sky-400' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}`;
     setTimeout(() => { bar.style.width = data.confidence + '%'; }, 100);
+
+    // Telemetry
+    if (data.latency_ms !== undefined) {
+      document.getElementById('result-latency').textContent = data.latency_ms + ' ms';
+    }
+    if (data.device) {
+      document.getElementById('result-device').textContent = data.device.toUpperCase();
+    }
 
     // Grad-CAM Heatmap
     const xaiContainer = document.getElementById('xai-toggle-container');
@@ -390,6 +489,8 @@ async function handleFile(file) {
     document.getElementById('loading-state').classList.add('hidden');
     document.getElementById('error-message').textContent = 'Cannot connect to server. Is the Flask backend running?';
     document.getElementById('error-state').classList.remove('hidden');
+  } finally {
+    setButtonsDisabled(false);
   }
 }
 </script>

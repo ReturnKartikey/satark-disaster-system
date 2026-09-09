@@ -11,18 +11,21 @@ def run_project():
     
     # 1. Check/Install dependencies
     print("\n[1/3] Checking dependencies...")
+    current_dir = os.path.dirname(os.path.abspath(__file__))
     try:
         import flask
+        import flask_cors
         import torch
+        import torchvision
         import transformers
+        import pytorch_grad_cam
         print("Done.")
     except ImportError:
         print("Missing libraries. Installing required packages...")
-        subprocess.check_call([sys.executable, "-m", "pip", "install", "flask", "torch", "transformers", "pillow", "numpy"])
+        req_path = os.path.join(current_dir, "requirements.txt")
+        subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", req_path])
 
     # 2. Get the path to app.py
-    # Assuming the root is C:\Users\Karti\Desktop\MINORMID\minor_project
-    current_dir = os.path.dirname(os.path.abspath(__file__))
     app_path = os.path.join(current_dir, "backend", "app.py")
     
     if not os.path.exists(app_path):

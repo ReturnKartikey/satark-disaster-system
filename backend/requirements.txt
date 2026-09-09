@@ -3,4 +3,9 @@ flask-cors
 torch
 torchvision
 transformers
-Pillow
+pillow
+numpy
+grad-cam
+opencv-python
+gunicorn
+

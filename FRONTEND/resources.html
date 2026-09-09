@@ -18,13 +18,41 @@ tailwind.config={darkMode:"class",theme:{extend:{
 </script>
 <style>
   html{scroll-behavior:smooth;}
+  *{
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+  }
+  ::-webkit-scrollbar{width:8px;height:8px;}
+  ::-webkit-scrollbar-track{background:#0c0e10;}
+  ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:9999px;border:2px solid #0c0e10;}
+  ::-webkit-scrollbar-thumb:hover{background:#334155;}
+
   body{font-family:'Inter',sans-serif;background-color:#0c0e10;color:#e2e2e5;}
   .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;}
   #map{border-radius:1rem;z-index:1;}
   .leaflet-container{background:#0c0e10;}
-  @keyframes fadeSlideUp{from{opacity:0;transform:translateY(20px) scale(0.98);}to{opacity:1;transform:translateY(0) scale(1);}}
-  .animate-fade-up{animation:fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
-  .result-card{animation:fadeSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;}
+  
+  @keyframes fadeSlideUp{
+    from{opacity:0;transform:translate3d(0, 16px, 0) scale(0.985);}
+    to{opacity:1;transform:translate3d(0, 0, 0) scale(1);}
+  }
+  .animate-fade-up{
+    animation:fadeSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    will-change:transform, opacity;
+  }
+  .result-card{
+    transition:transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, background-color 0.25s ease, box-shadow 0.25s ease;
+    will-change:transform;
+  }
+  .result-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 12px 24px -6px rgba(0,0,0,0.6);
+  }
+  .result-card:active{
+    transform:translateY(0) scale(0.99);
+  }
+
   @keyframes pulse-ring{0%{transform:scale(1);opacity:1;}100%{transform:scale(3);opacity:0;}}
   .pulse-marker{position:relative;}
   .pulse-marker::after{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid #ef4444;animation:pulse-ring 1.5s ease-out infinite;}
@@ -32,31 +60,56 @@ tailwind.config={darkMode:"class",theme:{extend:{
   .severity-medium{background:#eab30820;color:#facc15;border-color:#eab30840;}
   .severity-high{background:#f9731620;color:#fb923c;border-color:#f9731640;}
   .severity-critical{background:#ef444420;color:#f87171;border-color:#ef444440;}
+  
   .autocomplete-list{position:absolute;top:100%;left:0;right:0;z-index:50;max-height:200px;overflow-y:auto;}
-  .dtype-btn{transition:all 0.25s cubic-bezier(0.16, 1, 0.3, 1);}
+  
+  .dtype-btn, .sev-btn{
+    transition:transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, background-color 0.2s ease, color 0.2s ease, box-shadow 0.2s ease;
+    will-change:transform;
+  }
+  .dtype-btn:hover, .sev-btn:hover{
+    transform:translateY(-2px);
+  }
+  .dtype-btn:active, .sev-btn:active{
+    transform:translateY(0) scale(0.96);
+  }
+
+  #route-steps-panel{
+    transition:transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease;
+    will-change:transform, opacity;
+  }
 </style>
 </head>
 <body class="text-on-surface bg-background min-h-screen flex flex-col selection:bg-emerald-500/20 selection:text-emerald-400">
 
 <!-- Top Nav -->
-<header class="fixed top-0 w-full z-50 bg-slate-950/40 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
-  <div class="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-    <a href="/" class="flex items-center gap-2 group">
-      <span class="text-xl font-black tracking-wider text-slate-100 font-headline group-hover:text-emerald-400 transition-colors">SATARK</span>
+<header class="fixed top-0 w-full z-50 bg-slate-950/50 backdrop-blur-xl border-b border-slate-800/40 transition-all duration-300">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-2.5 group">
+      <span class="text-2xl font-black tracking-wider text-slate-100 font-headline group-hover:text-emerald-400 transition-colors">SATARK</span>
     </a>
 
-    <nav class="hidden md:flex items-center gap-1.5 p-1 bg-slate-900/40 border border-slate-800/50 rounded-xl">
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/flood">Flood Analysis</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/wildfire">Wildfire Tracking</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg text-slate-300 hover:text-white hover:bg-slate-800/60 transition-all" href="/cyclone">Cyclone Path</a>
-      <a class="px-3.5 py-1.5 text-xs font-semibold rounded-lg bg-emerald-500/15 text-emerald-400 border border-emerald-500/30 shadow-sm font-bold" href="/resources">Resource Map</a>
+    <nav class="hidden md:flex items-center gap-2 p-1.5 bg-slate-900/50 border border-slate-800/60 rounded-2xl shadow-inner">
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/flood">Flood Analysis</a>
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/wildfire">Wildfire Tracking</a>
+      <a class="px-4 py-2 text-sm font-semibold rounded-xl text-slate-300 hover:text-white hover:bg-slate-800/70 transition-all" href="/cyclone">Cyclone Path</a>
     </nav>
 
     <div class="flex items-center gap-3">
-      <a href="/resources" class="px-3.5 py-1.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 rounded-xl text-xs font-bold transition-all hover:scale-105 flex items-center gap-1.5 shadow-sm">
-        <span class="material-symbols-outlined text-sm">emergency</span> Operations Center
+      <a href="/resources" class="px-4 py-2 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-400 border border-emerald-500/40 rounded-xl text-sm font-bold transition-all hover:scale-105 flex items-center gap-2 shadow-sm">
+        <span class="material-symbols-outlined text-base">emergency</span> <span class="hidden sm:inline">Operations Center</span>
       </a>
+      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white" aria-label="Toggle Menu">
+        <span class="material-symbols-outlined text-xl">menu</span>
+      </button>
     </div>
+  </div>
+  <!-- Mobile Navigation Drawer -->
+  <div id="mobile-nav" class="hidden md:hidden px-6 pb-4 pt-2 bg-slate-950/95 border-b border-slate-800 space-y-2">
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/flood">Flood Analysis</a>
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/wildfire">Wildfire Tracking</a>
+    <a class="block px-3 py-2 text-sm font-semibold rounded-lg text-slate-300 hover:bg-slate-800 transition-colors" href="/cyclone">Cyclone Path</a>
+    <a class="block px-3 py-2 text-sm font-bold rounded-lg text-emerald-400 bg-emerald-500/15 border border-emerald-500/30" href="/resources">Operations Center</a>
   </div>
 </header>
 
@@ -76,16 +129,14 @@ tailwind.config={darkMode:"class",theme:{extend:{
     </div>
 
     <!-- Page Header -->
-    <div class="mb-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
-      <div>
-        <div class="flex items-center gap-2 mb-1">
-          <span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] uppercase tracking-widest font-bold rounded-full flex items-center gap-1.5 border border-emerald-500/20">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Logistics Hub
-          </span>
-        </div>
-        <h2 class="text-2xl md:text-3xl font-extrabold font-headline tracking-tight text-slate-100">Tactical Resource Allocation & Routing</h2>
+    <div class="mb-8">
+      <div class="flex items-center gap-3 mb-3">
+        <span class="px-3 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[10px] uppercase tracking-widest font-bold rounded-full flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Live Logistics Hub
+        </span>
       </div>
-      <p class="text-on-surface-variant max-w-md text-xs">Enter a disaster location and severity to automatically route the nearest emergency resources.</p>
+      <h2 class="text-3xl md:text-4xl font-extrabold font-headline tracking-tight mb-2 text-slate-100">Tactical Resource Allocation & Routing</h2>
+      <p class="text-on-surface-variant max-w-xl text-sm">Enter a disaster location and severity to automatically route the nearest emergency resources.</p>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -109,10 +160,15 @@ tailwind.config={darkMode:"class",theme:{extend:{
 
         <!-- Location -->
         <div class="bg-surface-container-low rounded-xl p-5 border border-outline-variant/10">
-          <label class="text-xs font-bold text-on-surface uppercase tracking-widest mb-3 block font-label">Location</label>
+          <div class="flex items-center justify-between mb-3">
+            <label class="text-xs font-bold text-on-surface uppercase tracking-widest block font-label">Location</label>
+            <button type="button" id="gps-btn" onclick="locateDevice()" class="text-[11px] font-bold text-emerald-400 hover:text-emerald-300 bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 px-2.5 py-1 rounded-lg transition-all flex items-center gap-1.5 shadow-sm active:scale-95">
+              <span class="material-symbols-outlined text-xs">my_location</span> Locate Me
+            </button>
+          </div>
           <div class="relative">
             <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-sm">location_on</span>
-            <input id="location-input" type="text" placeholder="e.g. Noida, Delhi, Mumbai" autocomplete="off"
+            <input id="location-input" type="text" placeholder="e.g. Noida, Delhi, Mumbai, or click map" autocomplete="off"
               class="w-full bg-surface-container border border-outline-variant/20 rounded-xl py-3 pl-10 pr-4 text-sm text-on-surface placeholder:text-outline focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/30 outline-none transition-all"/>
             <div id="autocomplete-results" class="autocomplete-list hidden bg-surface-container-high border border-outline-variant/20 rounded-xl mt-1 overflow-hidden"></div>
           </div>
@@ -151,6 +207,31 @@ tailwind.config={darkMode:"class",theme:{extend:{
             Satellite View
           </button>
         </div>
+
+        <!-- Live Turn-by-Turn Road Route Navigation Panel -->
+        <div id="route-steps-panel" class="hidden absolute inset-x-3 bottom-3 z-[450] bg-slate-950/95 backdrop-blur-xl border border-slate-700/80 rounded-2xl p-4 shadow-2xl transition-all duration-300 max-h-[52%] flex flex-col animate-fade-up">
+          <div class="flex items-center justify-between pb-2.5 border-b border-slate-800/80 shrink-0">
+            <div class="flex items-center gap-2.5">
+              <div id="nav-icon-badge" class="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
+                <span class="material-symbols-outlined text-base">directions_car</span>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <h4 id="nav-unit-name" class="text-xs font-bold text-slate-100 font-headline">Dispatched Unit</h4>
+                  <span id="nav-badge-status" class="px-2 py-0.5 rounded-full text-[9px] font-mono font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">EN ROUTE</span>
+                </div>
+                <p id="nav-summary-line" class="text-[10px] text-slate-400 font-mono">Real-Time OSRM Road Trajectory</p>
+              </div>
+            </div>
+            <button type="button" onclick="closeNavigationDrawer()" class="text-slate-400 hover:text-white p-1 rounded-lg hover:bg-slate-800 transition-colors">
+              <span class="material-symbols-outlined text-base">close</span>
+            </button>
+          </div>
+          <div id="nav-steps-list" class="overflow-y-auto space-y-1.5 pt-2.5 text-xs pr-1 flex-1">
+            <!-- Injected turn steps -->
+          </div>
+        </div>
+
         <div id="map" class="w-full rounded-xl border border-outline-variant/10 overflow-hidden" style="height:calc(100vh - 200px);min-height:500px;"></div>
       </div>
 
@@ -168,52 +249,43 @@ tailwind.config={darkMode:"class",theme:{extend:{
 <!-- Footer -->
 <footer class="w-full bg-slate-950 border-t border-slate-800/60 text-slate-400 mt-auto">
   <div class="max-w-7xl mx-auto px-6 py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-10">
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-8 lg:gap-12 mb-10 items-start">
       <!-- Col 1: Brand & Mission -->
-      <div class="md:col-span-1 space-y-3">
-        <div class="flex items-center gap-2">
-          <span class="text-xl font-black tracking-wider text-slate-100 font-headline">SATARK</span>
+      <div class="md:col-span-5 space-y-3">
+        <div class="h-7 flex items-center">
+          <span class="text-xl font-black tracking-wider text-slate-100 font-headline leading-none">SATARK</span>
         </div>
-        <p class="text-xs text-slate-400 leading-relaxed">
+        <p class="text-xs text-slate-400 leading-relaxed max-w-sm">
           Advanced satellite-driven disaster detection and tactical emergency logistics engine, powered by explainable Vision Transformers.
         </p>
-        <div class="flex items-center gap-2 text-[11px] font-mono text-emerald-400 pt-1">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-          <span>Inference Engine: Active</span>
+      </div>
+
+      <!-- Col 2: Detection Pipelines -->
+      <div class="md:col-span-3 lg:col-span-3 space-y-3">
+        <div class="h-7 flex items-center">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
         </div>
-      </div>
-
-      <!-- Col 2: Detection Intelligence -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Detection Pipelines</h4>
-        <ul class="space-y-2 text-xs">
-          <li><a href="/flood" class="hover:text-sky-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
-          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
-          <li><a href="/cyclone" class="hover:text-cyan-400 transition-colors flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
-          <li><a href="/resources" class="text-emerald-400 font-semibold flex items-center gap-1.5"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
+        <ul class="space-y-2.5 text-xs">
+          <li><a href="/flood" class="hover:text-sky-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-sky-400">tsunami</span> Flood Inundation ViT</a></li>
+          <li><a href="/wildfire" class="hover:text-orange-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-orange-400">local_fire_department</span> Wildfire Thermal Core</a></li>
+          <li><a href="/cyclone" class="hover:text-cyan-400 transition-colors inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-cyan-400">cyclone</span> Cyclone Path & Vortex</a></li>
+          <li><a href="/resources" class="text-emerald-400 font-semibold inline-flex items-center gap-2"><span class="material-symbols-outlined text-sm text-emerald-400">emergency</span> Tactical Depot Routing</a></li>
         </ul>
       </div>
 
-      <!-- Col 3: Core Technology -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Architecture & Core</h4>
-        <ul class="space-y-1.5 text-xs text-slate-400 font-mono">
-          <li class="flex items-center justify-between"><span>Backbone:</span> <span class="text-slate-300">ViT-Base/16</span></li>
-          <li class="flex items-center justify-between"><span>Explainability:</span> <span class="text-slate-300">Grad-CAM (L-Norm)</span></li>
-          <li class="flex items-center justify-between"><span>Routing Engine:</span> <span class="text-slate-300">OSRM + OpenStreetMap</span></li>
-          <li class="flex items-center justify-between"><span>Compute Device:</span> <span class="text-slate-300">NVIDIA CUDA</span></li>
-        </ul>
-      </div>
-
-      <!-- Col 4: Protocols & Guidelines -->
-      <div class="space-y-3">
-        <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+      <!-- Col 3: Rapid Response -->
+      <div class="md:col-span-4 lg:col-span-4 space-y-3">
+        <div class="h-7 flex items-center">
+          <h4 class="text-xs font-bold uppercase tracking-wider text-slate-200 font-headline">Rapid Response</h4>
+        </div>
         <p class="text-xs text-slate-400 leading-relaxed">
           Integrated directly with emergency depots to calculate shortest-path tactical rescue routes during critical humanitarian situations.
         </p>
-        <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
-          Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
-        </a>
+        <div>
+          <a href="/resources" class="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-400 hover:text-emerald-300 transition-colors">
+            Open Operations Center <span class="material-symbols-outlined text-xs">arrow_forward</span>
+          </a>
+        </div>
       </div>
     </div>
 
@@ -236,15 +308,73 @@ let selectedLng = null;
 let map, disasterMarker;
 let resourceMarkers = [];
 let routeLines = [];
+let currentResources = [];
+let activeRouteIndex = null;
+let stepMarker = null;
 let searchTimeout;
+
+// ============ UTILITIES ============
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatStepDistance(meters) {
+  if (!meters || meters < 1) return '0 m';
+  if (meters >= 1000) {
+    return (meters / 1000).toFixed(1) + ' km';
+  }
+  return Math.round(meters) + ' m';
+}
+
+function getManeuverIcon(maneuver) {
+  if (!maneuver) return 'navigation';
+  const type = maneuver.type || '';
+  const mod = maneuver.modifier || '';
+  if (type === 'depart') return 'trip_origin';
+  if (type === 'arrive') return 'flag';
+  if (type.includes('roundabout') || type.includes('rotary')) return 'roundabout_right';
+  if (mod.includes('left')) return 'turn_left';
+  if (mod.includes('right')) return 'turn_right';
+  if (mod.includes('straight') || type === 'continue' || type === 'new name') return 'straight';
+  if (type === 'fork' || type === 'merge') return 'alt_route';
+  if (type === 'u-turn') return 'u_turn_left';
+  return 'navigation';
+}
+
+function formatManeuverText(step) {
+  if (!step.maneuver) return 'Follow road';
+  const type = step.maneuver.type;
+  const mod = (step.maneuver.modifier || '').replace('_', ' ');
+  const roadName = step.name ? ` onto <span class="font-semibold text-slate-100">${escapeHtml(step.name)}</span>` : '';
+
+  if (type === 'depart') return `Depart emergency depot${roadName}`;
+  if (type === 'arrive') return `Arrive at disaster mitigation zone`;
+  if (type === 'roundabout' || type === 'rotary') {
+    const exitText = step.maneuver.exit ? `take exit ${step.maneuver.exit}` : 'enter roundabout';
+    return `At roundabout, ${exitText}${roadName}`;
+  }
+  if (type === 'turn') return `Turn ${mod || 'along route'}${roadName}`;
+  if (type === 'end of road') return `At road end, turn ${mod || 'along route'}${roadName}`;
+  if (type === 'fork') return `Keep ${mod || 'straight'} at fork${roadName}`;
+  if (type === 'merge') return `Merge ${mod || 'into corridor'}${roadName}`;
+  if (type === 'continue' || type === 'new name') return `Continue straight${roadName}`;
+  return `${type.charAt(0).toUpperCase() + type.slice(1)} ${mod}${roadName}`;
+}
 
 // ============ MAP INIT ============
 map = L.map('map', { zoomControl: false, maxZoom: 19 }).setView([22.5, 78.9], 5);
 L.control.zoom({ position: 'topright' }).addTo(map);
 
-// 1. Midnight Dark Basemap (Stadia Alidade Smooth Dark: genuine dark-mode with coastlines, borders & roads, zero watermarks)
-const darkLayer = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-  attribution: '&copy; <a href="https://stadiamaps.com/" target="_blank">Stadia Maps</a> &copy; <a href="https://openmaptiles.org/" target="_blank">OpenMapTiles</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+// 1. Midnight Dark Basemap (CartoDB Dark Matter: genuine dark-mode with coastlines, borders & roads, zero watermarks, keyless)
+const darkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+  attribution: '&copy; <a href="https://carto.com/" target="_blank">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+  subdomains: 'abcd',
   maxZoom: 20
 }).addTo(map);
 
@@ -314,7 +444,7 @@ function selectSeverity(btn, sev) {
   btn.className = `sev-btn active p-2 rounded-lg border ${style} text-xs font-bold transition-all hover:scale-105`;
 }
 
-// ============ LOCATION AUTOCOMPLETE ============
+// ============ LOCATION AUTOCOMPLETE & MAP CLICK ============
 const locInput = document.getElementById('location-input');
 const acResults = document.getElementById('autocomplete-results');
 
@@ -324,12 +454,12 @@ locInput.addEventListener('input', () => {
   if (q.length < 3) { acResults.classList.add('hidden'); return; }
   searchTimeout = setTimeout(async () => {
     try {
-      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&countrycodes=in&limit=5`);
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=5`);
       const data = await res.json();
       if (!data.length) { acResults.classList.add('hidden'); return; }
       acResults.innerHTML = data.map(d => {
         const safeName = d.display_name.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-        return `<div class="px-4 py-3 hover:bg-surface-container cursor-pointer text-sm text-on-surface border-b border-outline-variant/10 last:border-0" onmousedown="event.preventDefault(); pickLocation(${d.lat},${d.lon},'${safeName}')">${d.display_name}</div>`;
+        return `<div class="px-4 py-3 hover:bg-surface-container cursor-pointer text-sm text-on-surface border-b border-outline-variant/10 last:border-0" onmousedown="event.preventDefault(); pickLocation(${d.lat},${d.lon},'${safeName}')">${escapeHtml(d.display_name)}</div>`;
       }).join('');
       acResults.classList.remove('hidden');
     } catch(e) { acResults.classList.add('hidden'); }
@@ -346,45 +476,126 @@ function pickLocation(lat, lng, name) {
   document.getElementById('lng-input').value = lng;
   if (disasterMarker) map.removeLayer(disasterMarker);
   disasterMarker = L.marker([lat, lng], { icon: disasterIcon }).addTo(map)
-    .bindPopup(`<b style="color:#ef4444;">DISASTER ZONE</b><br>${locInput.value}`).openPopup();
+    .bindPopup(`<b style="color:#ef4444;">DISASTER ZONE</b><br>${escapeHtml(locInput.value)}`).openPopup();
   map.flyTo([lat, lng], 12, { duration: 1.5 });
 }
 
 // Click on map to set location
 map.on('click', async (e) => {
   selectedLat = e.latlng.lat; selectedLng = e.latlng.lng;
+  document.getElementById('lat-input').value = selectedLat;
+  document.getElementById('lng-input').value = selectedLng;
   if (disasterMarker) map.removeLayer(disasterMarker);
   disasterMarker = L.marker([e.latlng.lat, e.latlng.lng], { icon: disasterIcon }).addTo(map);
   try {
     const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${e.latlng.lat}&lon=${e.latlng.lng}`);
     const data = await res.json();
     locInput.value = data.display_name ? data.display_name.split(',').slice(0, 3).join(',') : `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
-    disasterMarker.bindPopup(`<b style="color:#ef4444;">DISASTER ZONE</b><br>${locInput.value}`).openPopup();
+    disasterMarker.bindPopup(`<b style="color:#ef4444;">DISASTER ZONE</b><br>${escapeHtml(locInput.value)}`).openPopup();
   } catch(err) {
     locInput.value = `${e.latlng.lat.toFixed(4)}, ${e.latlng.lng.toFixed(4)}`;
   }
 });
 
+// ============ "LOCATE MY DEVICE" GPS FEATURE ============
+function locateDevice() {
+  const gpsBtn = document.getElementById('gps-btn');
+  if (!navigator.geolocation) {
+    alert('Geolocation is not supported by your browser.');
+    return;
+  }
+
+  const origContent = gpsBtn.innerHTML;
+  gpsBtn.innerHTML = '<div class="w-3 h-3 border-2 border-emerald-400 border-t-transparent rounded-full animate-spin"></div> Acquiring GPS...';
+  gpsBtn.disabled = true;
+
+  navigator.geolocation.getCurrentPosition(
+    async (pos) => {
+      const lat = pos.coords.latitude;
+      const lng = pos.coords.longitude;
+      selectedLat = lat;
+      selectedLng = lng;
+
+      document.getElementById('lat-input').value = lat;
+      document.getElementById('lng-input').value = lng;
+
+      if (disasterMarker) map.removeLayer(disasterMarker);
+      disasterMarker = L.marker([lat, lng], { icon: disasterIcon }).addTo(map);
+
+      let locationLabel = `Device GPS Location (${lat.toFixed(4)}, ${lng.toFixed(4)})`;
+
+      try {
+        const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data && data.display_name) {
+            locationLabel = data.display_name.split(',').slice(0, 3).join(',');
+          }
+        }
+      } catch (err) {
+        console.warn('Reverse geocode fallback:', err);
+      }
+
+      locInput.value = locationLabel;
+      disasterMarker.bindPopup(`<b style="color:#ef4444;">DISASTER ZONE (DEVICE GPS)</b><br>${escapeHtml(locationLabel)}<br><span style="font-size:10px;color:#94a3b8;">Accuracy: ±${Math.round(pos.coords.accuracy || 20)}m</span>`).openPopup();
+
+      map.flyTo([lat, lng], 13, { duration: 1.4 });
+
+      gpsBtn.innerHTML = '<span class="material-symbols-outlined text-xs">check_circle</span> Located!';
+      setTimeout(() => {
+        gpsBtn.innerHTML = origContent;
+        gpsBtn.disabled = false;
+      }, 2500);
+
+      // Auto-dispatch nearby emergency resources
+      setTimeout(() => {
+        allocateResources();
+      }, 600);
+    },
+    (err) => {
+      console.error('Geolocation error:', err);
+      gpsBtn.innerHTML = origContent;
+      gpsBtn.disabled = false;
+      let msg = 'Could not acquire device coordinates.';
+      if (err.code === 1) msg = 'Location permission was denied. Please enable location access or click on the map.';
+      else if (err.code === 2) msg = 'Device location is currently unavailable.';
+      else if (err.code === 3) msg = 'Location request timed out. Please try again.';
+      alert(msg);
+    },
+    { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+  );
+}
+
 // ============ ALLOCATE RESOURCES ============
 async function allocateResources() {
   if (!selectedLat || !selectedLng) {
-    alert('Please select a disaster location first (type a city name or click the map).');
+    alert('Please select a disaster location first (type a city name, click "Locate Me", or click on the map).');
     return;
   }
   const btn = document.getElementById('allocate-btn');
   btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Allocating...';
   btn.disabled = true;
 
+  closeNavigationDrawer();
+
   // Clear old markers and routes
+  if (stepMarker) { map.removeLayer(stepMarker); stepMarker = null; }
   resourceMarkers.forEach(m => map.removeLayer(m));
-  routeLines.forEach(r => map.removeLayer(r));
-  resourceMarkers = []; routeLines = [];
+  routeLines.forEach(r => { if (r && r.polyline) map.removeLayer(r.polyline); });
+  resourceMarkers = [];
+  routeLines = [];
+  currentResources = [];
 
   try {
     const res = await fetch('/api/allocate-resources', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lat: parseFloat(selectedLat), lng: parseFloat(selectedLng), disaster_type: selectedType, severity: selectedSeverity })
+      body: JSON.stringify({
+        lat: parseFloat(selectedLat),
+        lng: parseFloat(selectedLng),
+        disaster_type: selectedType,
+        severity: selectedSeverity
+      })
     });
     const data = await res.json();
 
@@ -400,7 +611,9 @@ async function allocateResources() {
   }
 }
 
+// ============ RENDER RESOURCES & LIVE OSRM ROUTES ============
 function renderResources(resources, severity) {
+  currentResources = resources || [];
   const icons = {
     ambulance: makeIcon('#3b82f6', 'ambulance'),
     rescue_team: makeIcon('#22c55e', 'shield_person'),
@@ -408,92 +621,341 @@ function renderResources(resources, severity) {
     fire_station: makeIcon('#f97316', 'fire_truck'),
     ndrf: makeIcon('#06b6d4', 'military_tech')
   };
-  const typeLabels = { ambulance: 'Ambulance', rescue_team: 'Rescue Team', hospital: 'Hospital', fire_station: 'Fire Station', ndrf: 'NDRF Unit' };
-  const sevColors = { low: 'severity-low', medium: 'severity-medium', high: 'severity-high', critical: 'severity-critical' };
+  const iconColors = {
+    ambulance: 'text-blue-400 bg-blue-500/15 border-blue-500/20',
+    rescue_team: 'text-green-400 bg-green-500/15 border-green-500/20',
+    hospital: 'text-purple-400 bg-purple-500/15 border-purple-500/20',
+    fire_station: 'text-orange-400 bg-orange-500/15 border-orange-500/20',
+    ndrf: 'text-cyan-400 bg-cyan-500/15 border-cyan-500/20'
+  };
+  const typeLabels = {
+    ambulance: 'Ambulance Unit',
+    rescue_team: 'SDRF Rescue Team',
+    hospital: 'Trauma Hospital',
+    fire_station: 'Fire Brigade Station',
+    ndrf: 'NDRF Battalion'
+  };
+  const sevColors = {
+    low: 'severity-low',
+    medium: 'severity-medium',
+    high: 'severity-high',
+    critical: 'severity-critical'
+  };
 
   const bounds = L.latLngBounds([[selectedLat, selectedLng]]);
+  routeLines = new Array(resources.length);
 
-  // Add markers + routes
+  // Add Depot Markers & stagger OSRM highway route calls
   resources.forEach((r, i) => {
     const icon = icons[r.type] || makeIcon('#8b5cf6', 'emergency');
     const marker = L.marker([r.lat, r.lng], { icon }).addTo(map)
-      .bindPopup('<b>' + r.name + '</b><br>' + (typeLabels[r.type] || r.type) + '<br>Distance: ' + r.distance_km + ' km<br>ETA: ' + r.eta_minutes + ' min');
+      .bindPopup(`
+        <b style="color:#0f172a;">${escapeHtml(r.name)}</b><br>
+        <span style="font-size:11px;color:#475569;">${typeLabels[r.type] || r.type}</span><br>
+        <span style="font-size:11px;">Aerial: <b>${r.distance_km} km</b> • Est. ETA: <b>${r.eta_minutes} min</b></span><br>
+        <button onclick="inspectRoute(${i})" style="margin-top:6px;background:#10b981;color:#fff;border:none;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:bold;cursor:pointer;display:flex;align-items:center;gap:4px;">
+          <span class="material-symbols-outlined" style="font-size:14px;">alt_route</span> View Turn-by-Turn
+        </button>
+      `);
+    
+    marker.on('click', () => inspectRoute(i));
     resourceMarkers.push(marker);
     bounds.extend([r.lat, r.lng]);
 
-    // Draw route with animation delay
-    setTimeout(function() { drawRoute(r.lat, r.lng, r.type); }, i * 200);
+    // Stagger OSRM requests by 120ms to respect public rate limits
+    setTimeout(() => {
+      fetchAndDrawRoute(r, i);
+    }, i * 120);
   });
 
   map.flyToBounds(bounds.pad(0.3), { duration: 1.2 });
 
   // Resource list cards
-  var listEl = document.getElementById('resource-list');
-  var cardsHtml = '';
-  for (var i = 0; i < resources.length; i++) {
-    var r = resources[i];
-    var iconName = r.type === 'ambulance' ? 'ambulance' : r.type === 'rescue_team' ? 'shield_person' : r.type === 'hospital' ? 'local_hospital' : r.type === 'fire_station' ? 'fire_truck' : 'military_tech';
-    cardsHtml += '<div class="result-card bg-surface-container-low rounded-xl p-4 border border-outline-variant/10 transition-all cursor-pointer" onclick="map.flyTo([' + r.lat + ',' + r.lng + '],14)">';
-    cardsHtml += '<div class="flex items-start gap-3">';
-    cardsHtml += '<div class="w-9 h-9 rounded-full bg-emerald-500/15 flex items-center justify-center shrink-0">';
-    cardsHtml += '<span class="material-symbols-outlined text-emerald-400 text-base" style="font-variation-settings:\'FILL\' 1;">' + iconName + '</span>';
-    cardsHtml += '</div>';
-    cardsHtml += '<div class="flex-1 min-w-0">';
-    cardsHtml += '<p class="text-sm font-bold truncate">' + r.name + '</p>';
-    cardsHtml += '<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">' + (typeLabels[r.type] || r.type) + '</p>';
-    cardsHtml += '<div class="flex gap-3 mt-2">';
-    cardsHtml += '<span class="text-xs text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-xs">straighten</span>' + r.distance_km + ' km</span>';
-    cardsHtml += '<span class="text-xs text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-xs">schedule</span>' + r.eta_minutes + ' min</span>';
-    cardsHtml += '</div></div></div></div>';
-  }
+  const listEl = document.getElementById('resource-list');
+  let cardsHtml = '';
+  resources.forEach((r, i) => {
+    const iconName = r.type === 'ambulance' ? 'ambulance' : r.type === 'rescue_team' ? 'shield_person' : r.type === 'hospital' ? 'local_hospital' : r.type === 'fire_station' ? 'fire_truck' : 'military_tech';
+    const badgeStyle = iconColors[r.type] || 'text-emerald-400 bg-emerald-500/15 border-emerald-500/20';
+
+    cardsHtml += `
+      <div id="resource-card-${i}" class="result-card bg-surface-container-low hover:border-emerald-500/40 rounded-xl p-3.5 border border-outline-variant/10 transition-all cursor-pointer group" onclick="inspectRoute(${i})">
+        <div class="flex items-start gap-3">
+          <div class="w-9 h-9 rounded-xl ${badgeStyle} border flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-lg" style="font-variation-settings:'FILL' 1;">${iconName}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center justify-between gap-1 mb-0.5">
+              <p class="text-xs font-bold text-slate-100 truncate">${escapeHtml(r.name)}</p>
+              <span id="road-badge-${i}" class="shrink-0 text-[9px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 border border-slate-700">OSRM Road</span>
+            </div>
+            <p class="text-[10px] text-on-surface-variant uppercase tracking-wider font-semibold">${typeLabels[r.type] || r.type}</p>
+            <div class="flex items-center gap-3 mt-2 text-[11px] font-mono text-slate-300">
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-slate-400">straighten</span>
+                <span id="dist-val-${i}">${r.distance_km} km</span>
+              </span>
+              <span class="flex items-center gap-1">
+                <span class="material-symbols-outlined text-xs text-slate-400">schedule</span>
+                <span id="eta-val-${i}">${r.eta_minutes} min</span>
+              </span>
+            </div>
+            <button type="button" onclick="event.stopPropagation(); inspectRoute(${i})" class="mt-2.5 w-full py-1.5 px-2.5 rounded-lg bg-emerald-500/10 group-hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all">
+              <span class="material-symbols-outlined text-xs">turn_right</span> View Turn-by-Turn Navigation
+            </button>
+          </div>
+        </div>
+      </div>`;
+  });
   listEl.innerHTML = cardsHtml;
 
   // Summary panel
-  var sp = document.getElementById('summary-panel');
+  const sp = document.getElementById('summary-panel');
   sp.classList.remove('hidden');
-  var fastestEta = resources.length > 0 ? resources[0].eta_minutes : '-';
-  sp.innerHTML = '<div class="bg-surface-container-high rounded-xl p-5 border border-emerald-500/20">'
-    + '<div class="flex items-center justify-between mb-3">'
-    + '<h5 class="font-headline font-bold text-sm">Dispatch Summary</h5>'
-    + '<span class="px-2 py-1 text-[10px] font-bold rounded-full border ' + (sevColors[severity] || '') + '">' + (severity || 'high').toUpperCase() + '</span>'
-    + '</div>'
-    + '<div class="grid grid-cols-2 gap-2 text-center">'
-    + '<div class="bg-surface-container rounded-lg p-3"><p class="text-xl font-extrabold font-headline text-emerald-400">' + resources.length + '</p><p class="text-[10px] text-on-surface-variant">Total Units</p></div>'
-    + '<div class="bg-surface-container rounded-lg p-3"><p class="text-xl font-extrabold font-headline text-primary">' + fastestEta + '</p><p class="text-[10px] text-on-surface-variant">Fastest ETA</p></div>'
-    + '</div></div>';
+  const fastestEta = resources.length > 0 ? resources[0].eta_minutes : '-';
+  sp.innerHTML = `
+    <div class="bg-surface-container-high rounded-xl p-4 border border-emerald-500/20">
+      <div class="flex items-center justify-between mb-3">
+        <h5 class="font-headline font-bold text-xs">Tactical Dispatch Summary</h5>
+        <span class="px-2 py-0.5 text-[9px] font-mono font-bold rounded-full border ${sevColors[severity] || ''}">${(severity || 'high').toUpperCase()}</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 text-center">
+        <div class="bg-surface-container rounded-lg p-2.5">
+          <p class="text-lg font-extrabold font-headline text-emerald-400">${resources.length}</p>
+          <p class="text-[10px] text-on-surface-variant font-mono">Dispatched Units</p>
+        </div>
+        <div class="bg-surface-container rounded-lg p-2.5">
+          <p id="summary-fastest-eta" class="text-lg font-extrabold font-headline text-primary">${fastestEta} min</p>
+          <p class="text-[10px] text-on-surface-variant font-mono">Fastest Response</p>
+        </div>
+      </div>
+    </div>`;
 }
 
-async function drawRoute(rLat, rLng, type) {
-  const colors = { ambulance: '#3b82f6', rescue_team: '#22c55e', hospital: '#a855f7', fire_station: '#f97316', ndrf: '#06b6d4' };
+// ============ FETCH LIVE OSRM ROAD GEOMETRY ============
+async function fetchAndDrawRoute(r, index) {
+  const colors = {
+    ambulance: '#3b82f6',
+    rescue_team: '#22c55e',
+    hospital: '#a855f7',
+    fire_station: '#f97316',
+    ndrf: '#06b6d4'
+  };
+  const color = colors[r.type] || '#10b981';
+
   try {
-    const url = `https://router.project-osrm.org/route/v1/driving/${selectedLng},${selectedLat};${rLng},${rLat}?overview=full&geometries=geojson`;
+    const url = `https://router.project-osrm.org/route/v1/driving/${r.lng},${r.lat};${selectedLng},${selectedLat}?overview=full&geometries=geojson&steps=true`;
     const res = await fetch(url);
-    if (!res.ok) throw new Error(`OSRM HTTP error ${res.status}`);
+    if (!res.ok) throw new Error(`OSRM HTTP status ${res.status}`);
     const data = await res.json();
+
     if (data.routes && data.routes[0]) {
-      const coords = data.routes[0].geometry.coordinates.map(c => [c[1], c[0]]);
-      const line = L.polyline(coords, { color: colors[type] || '#8b5cf6', weight: 3, opacity: 0.7, dashArray: '8,8' }).addTo(map);
-      routeLines.push(line);
+      const route = data.routes[0];
+      const roadDist = (route.distance / 1000).toFixed(1);
+      const roadMin = Math.max(1, Math.round(route.duration / 60));
+      const steps = (route.legs && route.legs[0] && route.legs[0].steps) ? route.legs[0].steps : [];
+
+      r.roadDistance = roadDist;
+      r.roadDuration = roadMin;
+      r.steps = steps;
+      r.osrmRoute = route;
+
+      // Update card metrics
+      const distEl = document.getElementById(`dist-val-${index}`);
+      if (distEl) distEl.textContent = `${roadDist} km`;
+      const etaEl = document.getElementById(`eta-val-${index}`);
+      if (etaEl) etaEl.textContent = `${roadMin} min`;
+      const badgeEl = document.getElementById(`road-badge-${index}`);
+      if (badgeEl) {
+        badgeEl.className = 'shrink-0 text-[9px] font-mono font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30';
+        badgeEl.textContent = 'Road Verified';
+      }
+
+      // Convert coordinates [lon, lat] -> [lat, lon]
+      const latlngs = route.geometry.coordinates.map(c => [c[1], c[0]]);
+      const polyline = L.polyline(latlngs, {
+        color: color,
+        weight: 3.5,
+        opacity: 0.85,
+        lineCap: 'round',
+        lineJoin: 'round'
+      }).addTo(map);
+
+      polyline.bindTooltip(`<b>${escapeHtml(r.name)}</b><br>${roadDist} km (${roadMin} min)`, { sticky: true });
+      polyline.on('click', () => inspectRoute(index));
+
+      routeLines[index] = { polyline, latlngs, steps, resource: r, color };
       return;
     }
-    throw new Error('No OSRM route geometry returned');
-  } catch(e) {
-    // Fallback: straight trajectory between coordinates
-    const line = L.polyline([[selectedLat, selectedLng], [rLat, rLng]], { color: colors[type] || '#8b5cf6', weight: 2, opacity: 0.6, dashArray: '6,10' }).addTo(map);
-    routeLines.push(line);
+    throw new Error('No route returned by OSRM');
+  } catch (err) {
+    console.warn(`OSRM routing fallback for ${r.name}:`, err.message);
+    // Straight line fallback
+    const latlngs = [[selectedLat, selectedLng], [r.lat, r.lng]];
+    const polyline = L.polyline(latlngs, {
+      color: color,
+      weight: 2.5,
+      opacity: 0.6,
+      dashArray: '6, 8'
+    }).addTo(map);
+
+    polyline.bindTooltip(`<b>${escapeHtml(r.name)}</b><br>${r.distance_km} km (Direct vector)`, { sticky: true });
+    polyline.on('click', () => inspectRoute(index));
+
+    routeLines[index] = { polyline, latlngs, steps: [], resource: r, color, fallback: true };
+  }
+}
+
+// ============ INSPECT TURN-BY-TURN ROUTE ============
+function inspectRoute(index) {
+  if (!currentResources || !currentResources[index]) return;
+  activeRouteIndex = index;
+  const r = currentResources[index];
+  const routeObj = routeLines[index];
+
+  // Highlight selected card and dim others
+  document.querySelectorAll('[id^="resource-card-"]').forEach((c, idx) => {
+    if (idx === index) {
+      c.classList.add('border-emerald-500/80', 'bg-surface-container');
+      c.classList.remove('border-outline-variant/10', 'bg-surface-container-low');
+    } else {
+      c.classList.remove('border-emerald-500/80', 'bg-surface-container');
+      c.classList.add('border-outline-variant/10', 'bg-surface-container-low');
+    }
+  });
+
+  // Adjust polyline opacities
+  routeLines.forEach((item, idx) => {
+    if (!item || !item.polyline) return;
+    if (idx === index) {
+      item.polyline.setStyle({ weight: 6, opacity: 1.0 });
+      item.polyline.bringToFront();
+    } else {
+      item.polyline.setStyle({ weight: 2, opacity: 0.25 });
+    }
+  });
+
+  // Zoom map to route bounds
+  if (routeObj && routeObj.polyline) {
+    map.fitBounds(routeObj.polyline.getBounds(), { padding: [50, 50], maxZoom: 15 });
+  }
+
+  // Populate navigation panel
+  const panel = document.getElementById('route-steps-panel');
+  const unitNameEl = document.getElementById('nav-unit-name');
+  const summaryLineEl = document.getElementById('nav-summary-line');
+  const stepsListEl = document.getElementById('nav-steps-list');
+  const iconBadgeEl = document.getElementById('nav-icon-badge');
+
+  unitNameEl.textContent = r.name;
+  const distText = r.roadDistance ? `${r.roadDistance} km` : `${r.distance_km} km`;
+  const durText = r.roadDuration ? `~${r.roadDuration} min` : `~${r.eta_minutes} min`;
+  summaryLineEl.innerHTML = `Tactical Road Route • <span class="text-emerald-400 font-bold">${distText}</span> (${durText} driving time)`;
+
+  const typeIcons = {
+    ambulance: 'ambulance',
+    rescue_team: 'shield_person',
+    hospital: 'local_hospital',
+    fire_station: 'fire_truck',
+    ndrf: 'military_tech'
+  };
+  iconBadgeEl.innerHTML = `<span class="material-symbols-outlined text-base">${typeIcons[r.type] || 'directions_car'}</span>`;
+
+  // Render maneuvers
+  if (r.steps && r.steps.length > 0) {
+    let stepsHtml = '';
+    r.steps.forEach((step, sIdx) => {
+      const icon = getManeuverIcon(step.maneuver);
+      const text = formatManeuverText(step);
+      const dist = formatStepDistance(step.distance);
+      const stepCoord = (step.maneuver && step.maneuver.location) ? [step.maneuver.location[1], step.maneuver.location[0]] : null;
+      const coordParam = stepCoord ? `${stepCoord[0]},${stepCoord[1]}` : '';
+      const safeText = text.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+
+      stepsHtml += `
+        <div class="flex items-start gap-2.5 p-2 rounded-xl bg-slate-900/80 hover:bg-slate-800/90 border border-slate-800 transition-colors cursor-pointer" onclick="${coordParam ? `zoomToStep(${coordParam},'${safeText}')` : ''}">
+          <div class="w-6 h-6 rounded-md bg-emerald-500/15 text-emerald-400 flex items-center justify-center shrink-0 mt-0.5 font-bold">
+            <span class="material-symbols-outlined text-xs">${icon}</span>
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[11px] text-slate-200 leading-snug">${text}</div>
+            <div class="flex items-center gap-2 text-[10px] font-mono text-slate-400 mt-0.5">
+              ${dist ? `<span>${dist}</span>` : ''}
+              ${step.duration ? `<span>• ~${Math.max(1, Math.round(step.duration / 60))} min</span>` : ''}
+            </div>
+          </div>
+          <div class="text-[10px] font-mono text-slate-500 shrink-0">#${sIdx + 1}</div>
+        </div>`;
+    });
+    stepsListEl.innerHTML = stepsHtml;
+  } else {
+    stepsListEl.innerHTML = `
+      <div class="p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-center">
+        <p class="text-slate-300 text-xs font-semibold mb-1">Direct Tactical Dispatch Vector</p>
+        <p class="text-[11px] text-slate-400">Turn-by-turn road network data was cached or direct straight-line corridor was selected. Estimated ETA: ${r.eta_minutes} min.</p>
+      </div>`;
+  }
+
+  panel.classList.remove('hidden');
+}
+
+function zoomToStep(lat, lng, instruction) {
+  map.flyTo([lat, lng], 16, { duration: 0.8 });
+  if (stepMarker) map.removeLayer(stepMarker);
+  stepMarker = L.circleMarker([lat, lng], {
+    radius: 7,
+    fillColor: '#10b981',
+    color: '#ffffff',
+    weight: 2,
+    fillOpacity: 0.95
+  }).addTo(map);
+  if (instruction) {
+    stepMarker.bindPopup(`<div style="font-size:11px;font-weight:600;color:#0f172a;">${instruction}</div>`).openPopup();
+  }
+}
+
+function closeNavigationDrawer() {
+  const panel = document.getElementById('route-steps-panel');
+  if (panel) panel.classList.add('hidden');
+  activeRouteIndex = null;
+
+  if (stepMarker) {
+    map.removeLayer(stepMarker);
+    stepMarker = null;
+  }
+
+  // Restore all polyline styles
+  routeLines.forEach(item => {
+    if (!item || !item.polyline) return;
+    item.polyline.setStyle({
+      weight: item.fallback ? 2.5 : 3.5,
+      opacity: item.fallback ? 0.6 : 0.85
+    });
+  });
+
+  // Reset card styles
+  document.querySelectorAll('[id^="resource-card-"]').forEach(c => {
+    c.classList.remove('border-emerald-500/80', 'bg-surface-container');
+    c.classList.add('border-outline-variant/10', 'bg-surface-container-low');
+  });
+
+  // Fit bounds back to all points
+  if (selectedLat && selectedLng && resourceMarkers.length > 0) {
+    const bounds = L.latLngBounds([[selectedLat, selectedLng]]);
+    resourceMarkers.forEach(m => bounds.extend(m.getLatLng()));
+    map.flyToBounds(bounds.pad(0.3), { duration: 1.0 });
   }
 }
 
 // ============ AUTO-DISPATCH URL INGESTION ============
 window.addEventListener('DOMContentLoaded', () => {
   const params = new URLSearchParams(window.location.search);
-  const type = params.get('type');
-  const sev = params.get('severity') || 'critical';
+  const type = params.get('type') || params.get('disaster');
+  const sev = (params.get('severity') || 'critical').toLowerCase();
   const lat = params.get('lat');
   const lng = params.get('lng');
 
   if (type) {
-    const btn = document.querySelector(`.dtype-btn[onclick*="${type}"]`);
+    const btn = document.querySelector(`.dtype-btn[data-type="${type}"]`);
     if (btn) selectType(btn, type);
     
     const sevBtn = document.querySelector(`.sev-btn[onclick*="${sev}"]`);
@@ -520,6 +982,11 @@ window.addEventListener('DOMContentLoaded', () => {
     }
   }
 });
+
+function toggleMobileMenu() {
+  const m = document.getElementById('mobile-nav');
+  if (m) m.classList.toggle('hidden');
+}
 </script>
 </body>
 </html>

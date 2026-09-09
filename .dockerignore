@@ -34,6 +34,8 @@ inspect_output.txt
 err.txt
 *.png
 *.txt
+!assets/**
+!assets/*
 
 # Local Dataset Files (do not bundle raw datasets into container)
 cyclone/

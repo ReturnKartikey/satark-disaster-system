@@ -19,6 +19,14 @@ try:
 except ImportError:
     GRADCAM_AVAILABLE = False
 
+try:
+    from huggingface_hub import hf_hub_download
+    HF_HUB_AVAILABLE = True
+except ImportError:
+    HF_HUB_AVAILABLE = False
+
+HF_MODEL_REPO = os.environ.get("HF_MODEL_REPO", "ReturnKartikey/satark-models")
+
 # ============================================================
 # App Setup — templates are in FRONTEND folder
 # ============================================================
@@ -73,32 +81,6 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 print(f"[SATARK] Using device: {device}")
 
 # ============================================================
-# Load all models at startup
-# ============================================================
-models = {}
-
-for name, cfg in MODEL_CONFIG.items():
-    print(f"[SATARK] Loading {name} model from {cfg['path']} ...")
-    if not os.path.exists(cfg["path"]):
-        print(f"[SATARK] WARNING: Model file not found: {cfg['path']}. Skipping.")
-        continue
-
-    try:
-        model = ViTForImageClassification.from_pretrained(
-            "google/vit-base-patch16-224-in21k",
-            num_labels=2,
-        )
-        model.load_state_dict(torch.load(cfg["path"], map_location=device))
-        model.to(device)
-        model.eval()
-        models[name] = model
-        print(f"[SATARK] [OK] {name} model loaded successfully.")
-    except Exception as e:
-        print(f"[SATARK] [ERROR] Failed to load {name} model: {e}")
-
-print(f"\n[SATARK] Models ready: {list(models.keys())}")
-
-# ============================================================
 # Grad-CAM Attention Heatmap Setup
 # ============================================================
 class ViTWrapper(torch.nn.Module):
@@ -112,16 +94,95 @@ def reshape_transform(tensor, height=14, width=14):
     res = tensor[:, 1:, :].reshape(tensor.size(0), height, width, tensor.size(2))
     return res.transpose(2, 3).transpose(1, 2)
 
+models = {}
 cam_objects = {}
-if GRADCAM_AVAILABLE:
-    for name, model in models.items():
+startup_errors = {}
+
+def load_model_for(name):
+    if name in models:
+        return models[name]
+    cfg = MODEL_CONFIG.get(name)
+    if not cfg:
+        return None
+
+    model_path = cfg["path"]
+    if not os.path.exists(model_path):
+        alt_candidates = [
+            os.path.join(PROJECT_ROOT, os.path.basename(model_path)),
+            os.path.join(PROJECT_ROOT, "Burn", os.path.basename(model_path)),
+        ]
+        if name == "wildfire":
+            alt_candidates.extend([
+                os.path.join(PROJECT_ROOT, "vit_wildfire2_model.pth"),
+                os.path.join(PROJECT_ROOT, "vit_wildfire_model.pth"),
+            ])
+        for alt in alt_candidates:
+            if os.path.exists(alt):
+                model_path = alt
+                break
+
+    if not os.path.exists(model_path) and HF_HUB_AVAILABLE:
+        remote_filename = os.path.basename(cfg["path"])
+        if name == "wildfire":
+            remote_filename = "vit_wildfire_model.pth"
+        print(f"[SATARK] Local weights not found. Downloading {remote_filename} from Hugging Face Model Hub ({HF_MODEL_REPO})...")
+        hf_token = os.environ.get("HF_TOKEN") or None
+        if hf_token and not hf_token.strip():
+            hf_token = None
+        downloaded = None
         try:
-            wrapped = ViTWrapper(model).to(device)
-            target_layers = [model.vit.encoder.layer[-1].layernorm_before]
-            cam_objects[name] = GradCAM(model=wrapped, target_layers=target_layers, reshape_transform=reshape_transform)
-            print(f"[SATARK] [OK] GradCAM initialized for {name}")
-        except Exception as e:
-            print(f"[SATARK] GradCAM init failed for {name}: {e}")
+            downloaded = hf_hub_download(repo_id=HF_MODEL_REPO, filename=remote_filename, token=hf_token)
+        except Exception as e1:
+            try:
+                downloaded = hf_hub_download(repo_id=HF_MODEL_REPO, filename=remote_filename, token=None)
+            except Exception as e2:
+                startup_errors[name] = f"Download failed: {e1} | {e2}"
+                print(f"[SATARK] WARNING: Could not download {remote_filename} from HF Hub: {e1}")
+
+        if downloaded and os.path.exists(downloaded):
+            model_path = downloaded
+            print(f"[SATARK] [OK] Downloaded {name} model weights to {model_path}")
+
+    print(f"[SATARK] Loading {name} model from {model_path} ...")
+    if not os.path.exists(model_path):
+        err_msg = f"Model file not found: {model_path}"
+        startup_errors[name] = err_msg
+        print(f"[SATARK] WARNING: {err_msg}")
+        return None
+
+    try:
+        model = ViTForImageClassification.from_pretrained(
+            "google/vit-base-patch16-224-in21k",
+            num_labels=2,
+        )
+        model.load_state_dict(torch.load(model_path, map_location=device))
+        model.to(device)
+        model.eval()
+        models[name] = model
+        print(f"[SATARK] [OK] {name} model loaded successfully.")
+
+        if GRADCAM_AVAILABLE:
+            try:
+                wrapped = ViTWrapper(model).to(device)
+                target_layers = [model.vit.encoder.layer[-1].layernorm_before]
+                cam_objects[name] = GradCAM(model=wrapped, target_layers=target_layers, reshape_transform=reshape_transform)
+                print(f"[SATARK] [OK] GradCAM initialized for {name}")
+            except Exception as cam_e:
+                print(f"[SATARK] GradCAM init failed for {name}: {cam_e}")
+        return model
+    except Exception as e:
+        startup_errors[name] = f"Load error: {e}"
+        print(f"[SATARK] [ERROR] Failed to load {name} model: {e}")
+        return None
+
+# Load models at startup
+for disaster_key in MODEL_CONFIG:
+    try:
+        load_model_for(disaster_key)
+    except Exception as e:
+        startup_errors[disaster_key] = str(e)
+
+print(f"\n[SATARK] Models ready: {list(models.keys())}")
 
 def generate_heatmap(model_name, image, input_tensor):
     if not GRADCAM_AVAILABLE or model_name not in models:
@@ -205,7 +266,10 @@ def get_samples():
 @app.route("/api/predict/<disaster_type>", methods=["POST"])
 def predict(disaster_type):
     if disaster_type not in models:
-        return jsonify({"error": f"Model '{disaster_type}' not loaded."}), 404
+        load_model_for(disaster_type)
+    if disaster_type not in models:
+        detail = startup_errors.get(disaster_type, "Model could not be initialized.")
+        return jsonify({"error": f"Model '{disaster_type}' not loaded. Details: {detail}"}), 404
 
     if "image" not in request.files:
         return jsonify({"error": "No 'image' file provided."}), 400
@@ -290,6 +354,8 @@ def health():
         "status": "ok",
         "device": str(device),
         "models_loaded": list(models.keys()),
+        "cam_ready": list(cam_objects.keys()),
+        "startup_errors": startup_errors,
     })
 
 

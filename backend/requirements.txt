@@ -1,11 +1,10 @@
 flask
 flask-cors
-torch
-torchvision
-transformers
+transformers==5.2.0
 pillow
-numpy
-grad-cam
-opencv-python
+numpy<2.0.0
 gunicorn
-
+tqdm
+opencv-python-headless
+grad-cam
+huggingface_hub

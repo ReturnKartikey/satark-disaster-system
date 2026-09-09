@@ -1,33 +1,39 @@
 FROM python:3.10-slim
 
-# Set environment variables
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    PORT=7860
+    PORT=7860 \
+    HF_HOME=/tmp/huggingface
 
-WORKDIR /app
+WORKDIR /code
 
-# Install basic system dependencies
+# Install OpenCV runtime dependencies and CA certificates
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
     libgl1 \
     libglib2.0-0 \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy requirements first to leverage Docker's layer cache
-COPY requirements.txt /app/
+# Pre-install CPU-only PyTorch and Torchvision directly from official PyTorch CPU wheel repo
+RUN pip install --no-cache-dir torch torchvision --extra-index-url https://download.pytorch.org/whl/cpu
 
-# Install pip upgrade, CPU-only PyTorch/Torchvision (reduces image size from ~5GB to ~1.8GB),
-# and the rest of the requirements.
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir torch torchvision --index-url https://download.pytorch.org/whl/cpu && \
-    pip install --no-cache-dir -r requirements.txt
+# Copy requirements and install dependencies
+COPY requirements.txt /code/requirements.txt
+RUN pip install --no-cache-dir -r /code/requirements.txt
 
-# Copy the rest of the application
-COPY . /app/
+# Create non-root user (Hugging Face Spaces runs as user 1000)
+RUN useradd -m -u 1000 user && \
+    mkdir -p /tmp/huggingface && \
+    chown -R user:user /tmp/huggingface
 
-# Expose port (default for Hugging Face Spaces is 7860)
+# Copy application source code and grant full access to user
+COPY . /code
+RUN chown -R user:user /code
+
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
+
 EXPOSE 7860
 
-# Run with Gunicorn using shell form to dynamically respect the PORT environment variable
-CMD gunicorn --bind 0.0.0.0:${PORT:-7860} --workers 1 --timeout 240 backend.app:app
+CMD ["python", "-m", "gunicorn", "--bind", "0.0.0.0:7860", "--workers", "1", "--timeout", "300", "backend.app:app"]

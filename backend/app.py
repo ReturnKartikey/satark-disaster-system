@@ -6,7 +6,7 @@ import base64
 import random
 import numpy as np
 import torch
-from flask import Flask, request, jsonify, render_template, url_for
+from flask import Flask, request, jsonify, render_template, url_for, send_from_directory
 from flask_cors import CORS
 from torchvision import transforms
 from transformers import ViTForImageClassification
@@ -217,6 +217,10 @@ def generate_heatmap(model_name, image, input_tensor):
 # ============================================================
 # PAGE ROUTES — Flask serves the HTML pages
 # ============================================================
+@app.route("/favicon.ico")
+def favicon():
+    return send_from_directory(ASSETS_DIR, "favicon.svg", mimetype="image/svg+xml")
+
 @app.route("/")
 def home():
     return render_template("home.html")

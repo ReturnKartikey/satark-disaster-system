@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="satGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="50%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b1120"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </linearGradient>
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="0" stdDeviation="2.5" flood-color="#38bdf8" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+  <!-- Background Badge with rounded corner -->
+  <rect width="64" height="64" rx="16" fill="url(#bgGrad)"/>
+  <rect x="1.5" y="1.5" width="61" height="61" rx="14.5" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+  
+  <!-- Outer Satellite / Radar Rings -->
+  <circle cx="32" cy="32" r="23" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.25" stroke-dasharray="4 3"/>
+  <circle cx="32" cy="32" r="16" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.35"/>
+
+  <!-- Dynamic Storm Vortex / Radar Sweep Blade -->
+  <path d="M32 9 A23 23 0 0 1 55 32 C55 45 44 55 32 55 C23 55 17 48 17 40 C17 33 22 28 29 28 C34 28 37 32 37 36 C37 39 34 41 31 41" 
+        fill="none" stroke="url(#satGrad)" stroke-width="4.5" stroke-linecap="round" filter="url(#glow)"/>
+  
+  <!-- Central Luminous Sensor Core -->
+  <circle cx="32" cy="32" r="5" fill="#0284c7"/>
+  <circle cx="32" cy="32" r="3" fill="#38bdf8"/>
+  <circle cx="32" cy="32" r="1.5" fill="#ffffff"/>
+</svg>

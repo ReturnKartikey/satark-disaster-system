@@ -217,10 +217,6 @@ def generate_heatmap(model_name, image, input_tensor):
 # ============================================================
 # PAGE ROUTES — Flask serves the HTML pages
 # ============================================================
-@app.route("/favicon.ico")
-def favicon():
-    return send_from_directory(ASSETS_DIR, "favicon.svg", mimetype="image/svg+xml")
-
 @app.route("/")
 def home():
     return render_template("home.html")
@@ -349,6 +345,8 @@ def predict(disaster_type):
 
 @app.route("/favicon.ico")
 def favicon():
+    if os.path.exists(os.path.join(ASSETS_DIR, "favicon.svg")):
+        return send_from_directory(ASSETS_DIR, "favicon.svg", mimetype="image/svg+xml")
     return ("", 204)
 
 

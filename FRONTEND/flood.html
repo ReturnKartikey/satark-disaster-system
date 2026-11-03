@@ -99,7 +99,7 @@ tailwind.config={darkMode:"class",theme:{extend:{
       <a href="/resources" class="px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 flex items-center gap-2 shadow-sm">
         <span class="material-symbols-outlined text-base">emergency</span> <span class="hidden sm:inline">Operations Center</span>
       </a>
-      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white" aria-label="Toggle Menu">
+      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all" aria-label="Toggle Menu">
         <span class="material-symbols-outlined text-xl">menu</span>
       </button>
     </div>
@@ -116,7 +116,7 @@ tailwind.config={darkMode:"class",theme:{extend:{
 <main class="pt-28 pb-16 flex-1 px-6 md:px-10 max-w-6xl mx-auto w-full animate-fade-up">
   <div class="mb-8">
     <div class="flex items-center gap-3 mb-3">
-      <span class="px-3 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/20 text-[10px] uppercase tracking-widest font-bold rounded-full flex items-center gap-2">
+      <span class="px-3 py-1 bg-sky-500/10 text-sky-400 border border-sky-500/20 text-xs uppercase tracking-widest font-bold rounded-full flex items-center gap-2">
         <span class="w-2 h-2 rounded-full bg-sky-400 animate-pulse"></span> ViT Neural Core Online
       </span>
     </div>
@@ -126,7 +126,7 @@ tailwind.config={darkMode:"class",theme:{extend:{
 
   <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
     <div class="lg:col-span-3 space-y-6">
-      <div id="upload-zone" class="upload-zone bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 rounded-2xl p-10 flex flex-col items-center text-center cursor-pointer" onclick="document.getElementById('file-input').click()">
+      <div id="upload-zone" onclick="document.getElementById('file-input').click()" role="button" tabindex="0" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();document.getElementById('file-input').click();}" class="upload-zone bg-surface-container-lowest border-2 border-dashed border-outline-variant/30 rounded-2xl p-10 flex flex-col items-center text-center cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950">
         <input type="file" id="file-input" accept="image/*" class="hidden"/>
         <div class="w-16 h-16 bg-surface-container-high rounded-2xl flex items-center justify-center mb-4 border border-outline-variant/20 shadow-inner">
           <span class="material-symbols-outlined text-sky-400 text-3xl">tsunami</span>
@@ -141,16 +141,16 @@ tailwind.config={darkMode:"class",theme:{extend:{
       <!-- One-Click Try Demo Samples -->
       <div class="flex flex-wrap items-center gap-2 pt-1">
         <span class="text-xs text-on-surface-variant font-medium mr-1">Quick Demo Samples:</span>
-        <button type="button" onclick="loadSample('/assets/samples/flood_1.jpg', 'flood_1.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+        <button type="button" onclick="loadSample('/assets/samples/flood_1.jpg', 'flood_1.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
           🌊 <span>Flood 1</span>
         </button>
-        <button type="button" onclick="loadSample('/assets/samples/flood_2.jpg', 'flood_2.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+        <button type="button" onclick="loadSample('/assets/samples/flood_2.jpg', 'flood_2.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:border-sky-500/50 hover:bg-sky-500/10 hover:text-sky-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
           🌊 <span>Flood 2</span>
         </button>
-        <button type="button" onclick="loadSample('/assets/samples/non_flood_1.jpg', 'non_flood_1.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+        <button type="button" onclick="loadSample('/assets/samples/non_flood_1.jpg', 'non_flood_1.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
           🌱 <span>Non-Flood 1</span>
         </button>
-        <button type="button" onclick="loadSample('/assets/samples/non_flood_2.jpg', 'non_flood_2.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
+        <button type="button" onclick="loadSample('/assets/samples/non_flood_2.jpg', 'non_flood_2.jpg')" class="sample-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-surface-container border border-outline-variant/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 hover:border-emerald-500/50 hover:bg-emerald-500/10 hover:text-emerald-400 text-slate-300 transition-all flex items-center gap-1.5 shadow-sm">
           🌱 <span>Non-Flood 2</span>
         </button>
       </div>
@@ -159,15 +159,15 @@ tailwind.config={darkMode:"class",theme:{extend:{
       <div id="preview-section" class="hidden fade-in">
         <div class="bg-surface-container rounded-2xl overflow-hidden atmospheric-shadow border border-outline-variant/10">
           <div class="relative bg-slate-950 flex items-center justify-center h-80 overflow-hidden">
-            <img id="preview-img" class="w-full h-full object-contain transition-opacity duration-500 ease-in-out opacity-100"/>
-            <img id="heatmap-img" class="w-full h-full object-contain transition-opacity duration-500 ease-in-out opacity-0 absolute inset-0 pointer-events-none"/>
+            <img id="preview-img" class="w-full h-full object-contain transition-opacity duration-200 ease-in-out opacity-100"/>
+            <img id="heatmap-img" class="w-full h-full object-contain transition-opacity duration-200 ease-in-out opacity-0 absolute inset-0 pointer-events-none"/>
             
             <!-- XAI Heatmap Toggle Pills -->
             <div id="xai-toggle-container" class="hidden absolute top-3 right-3 bg-slate-900/90 backdrop-blur-md rounded-xl p-1 border border-outline-variant/30 flex items-center gap-1 z-10 shadow-lg">
-              <button id="view-raw-btn" onclick="toggleHeatmap('raw')" class="px-3 py-1 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition-all shadow-sm">
+              <button id="view-raw-btn" onclick="toggleHeatmap('raw')" class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 px-3 py-1 rounded-lg text-xs font-semibold bg-sky-500 text-slate-950 transition-all shadow-sm">
                 🛰️ Satellite View
               </button>
-              <button id="view-cam-btn" onclick="toggleHeatmap('cam')" class="px-3 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all">
+              <button id="view-cam-btn" onclick="toggleHeatmap('cam')" class="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 px-3 py-1 rounded-lg text-xs font-semibold text-slate-300 hover:text-white transition-all">
                 🌊 ViT Attention Heatmap
               </button>
             </div>
@@ -177,7 +177,7 @@ tailwind.config={darkMode:"class",theme:{extend:{
               <p class="text-sm font-bold text-slate-200" id="preview-filename">image.jpg</p>
               <p class="text-xs text-on-surface-variant font-mono" id="preview-size">0 KB</p>
             </div>
-            <button onclick="document.getElementById('file-input').click()" class="text-sky-400 text-xs font-bold hover:underline">Select Different Image</button>
+            <button onclick="document.getElementById('file-input').click()" class="text-sky-400 text-xs font-bold hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 rounded px-1">Select Different Image</button>
           </div>
         </div>
       </div>
@@ -223,7 +223,7 @@ tailwind.config={darkMode:"class",theme:{extend:{
             </div>
             <div>
               <h5 class="font-headline font-bold text-sm">ViT Classification Result</h5>
-              <p class="text-[10px] text-on-surface-variant uppercase tracking-widest font-mono">Vision Transformer (ViT-B/16)</p>
+              <p class="text-xs text-on-surface-variant uppercase tracking-widest font-mono">Vision Transformer (ViT-B/16)</p>
             </div>
           </div>
 
@@ -238,12 +238,12 @@ tailwind.config={darkMode:"class",theme:{extend:{
               <span id="result-confidence" class="text-sky-400 font-bold font-mono"></span>
             </div>
             <div class="w-full h-3 bg-surface-container-lowest rounded-full overflow-hidden">
-              <div id="result-bar" class="h-full rounded-full transition-all duration-1000 ease-out" style="width:0%"></div>
+              <div id="result-bar" class="h-full rounded-full transition-all duration-300 ease-out" style="width:0%"></div>
             </div>
           </div>
 
           <!-- Inference Telemetry -->
-          <div class="grid grid-cols-2 gap-2 text-[11px] font-mono">
+          <div class="grid grid-cols-2 gap-2 text-xs font-mono">
             <div class="px-3 py-2 rounded-xl bg-surface-container border border-outline-variant/10 flex items-center justify-between text-slate-400">
               <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-xs text-sky-400">speed</span> LATENCY</span>
               <span id="result-latency" class="text-sky-400 font-bold">-- ms</span>
@@ -455,7 +455,7 @@ async function handleFile(file) {
 
     document.getElementById('result-confidence').textContent = data.confidence + '%';
     const bar = document.getElementById('result-bar');
-    bar.className = `h-full rounded-full transition-all duration-1000 ease-out ${isPositive ? 'bg-gradient-to-r from-sky-500 to-blue-500' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}`;
+    bar.className = `h-full rounded-full transition-all duration-300 ease-out ${isPositive ? 'bg-gradient-to-r from-sky-500 to-blue-500' : 'bg-gradient-to-r from-emerald-500 to-teal-400'}`;
     setTimeout(() => { bar.style.width = data.confidence + '%'; }, 100);
 
     // Telemetry

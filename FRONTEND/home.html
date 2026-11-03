@@ -159,7 +159,7 @@ tailwind.config = {
       <a href="/resources" class="px-4 py-2 bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 rounded-xl text-sm font-bold transition-all hover:scale-105 flex items-center gap-2 shadow-sm">
         <span class="material-symbols-outlined text-base">emergency</span> <span class="hidden sm:inline">Operations Center</span>
       </a>
-      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white" aria-label="Toggle Menu">
+      <button type="button" onclick="toggleMobileMenu()" class="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all" aria-label="Toggle Menu">
         <span class="material-symbols-outlined text-xl">menu</span>
       </button>
     </div>
@@ -185,7 +185,7 @@ tailwind.config = {
       <div class="hero-fade absolute inset-0"></div>
     </div>
     <div class="relative z-10 text-center max-w-4xl mx-auto space-y-6 animate-fade-up">
-      <h1 class="font-headline text-6xl md:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100 to-slate-400 leading-none">
+      <h1 class="font-headline text-6xl md:text-8xl font-black tracking-tighter text-white drop-shadow-sm leading-none">
         SATARK
       </h1>
       <p class="font-headline text-lg md:text-2xl text-sky-400 font-semibold tracking-wide">
@@ -211,7 +211,7 @@ tailwind.config = {
       <a href="/flood" class="interactive-card animate-fade-up delay-1 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-sky-500/40">
         <div class="flex items-center justify-between mb-4">
           <span class="material-symbols-outlined text-sky-400 text-4xl group-hover:scale-110 transition-transform duration-300">tsunami</span>
-          <span class="text-[10px] font-mono font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">SENTINEL-2</span>
+          <span class="text-xs font-mono font-bold text-sky-400 bg-sky-500/10 px-2 py-0.5 rounded border border-sky-500/20">SENTINEL-2</span>
         </div>
         <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Flood Inundation</h3>
         <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Classify catastrophic surface water logging and drone flood imagery with Explainable AI.</p>
@@ -223,7 +223,7 @@ tailwind.config = {
       <a href="/wildfire" class="interactive-card animate-fade-up delay-2 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-orange-500/40 md:-mt-4">
         <div class="flex items-center justify-between mb-4">
           <span class="material-symbols-outlined text-orange-400 text-4xl group-hover:scale-110 transition-transform duration-300">local_fire_department</span>
-          <span class="text-[10px] font-mono font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">THERMAL</span>
+          <span class="text-xs font-mono font-bold text-orange-400 bg-orange-500/10 px-2 py-0.5 rounded border border-orange-500/20">THERMAL</span>
         </div>
         <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Wildfire Tracking</h3>
         <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Detect raging wildfire fronts from optical, drone, or satellite sensor imagery in milliseconds.</p>
@@ -235,7 +235,7 @@ tailwind.config = {
       <a href="/cyclone" class="interactive-card animate-fade-up delay-3 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-cyan-500/40">
         <div class="flex items-center justify-between mb-4">
           <span class="material-symbols-outlined text-cyan-400 text-4xl group-hover:scale-110 transition-transform duration-300">cyclone</span>
-          <span class="text-[10px] font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">INSAT-3D</span>
+          <span class="text-xs font-mono font-bold text-cyan-400 bg-cyan-500/10 px-2 py-0.5 rounded border border-cyan-500/20">INSAT-3D</span>
         </div>
         <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Cyclone Path</h3>
         <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Analyze cyclonic vortices, eye formation, and atmospheric pressure systems with 99.1% accuracy.</p>
@@ -247,7 +247,7 @@ tailwind.config = {
       <a href="/resources" class="interactive-card animate-fade-up delay-4 group p-8 rounded-2xl bg-surface-container-low/90 backdrop-blur-md hover:bg-surface-container border border-outline-variant/10 hover:border-emerald-500/40 md:-mt-4">
         <div class="flex items-center justify-between mb-4">
           <span class="material-symbols-outlined text-emerald-400 text-4xl group-hover:scale-110 transition-transform duration-300">emergency</span>
-          <span class="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">OSRM</span>
+          <span class="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">OSRM</span>
         </div>
         <h3 class="font-headline text-xl font-bold mb-2 text-slate-100">Resource Routing</h3>
         <p class="font-body text-xs text-on-surface-variant leading-relaxed mb-4">Auto-dispatch NDRF battalions, ambulances, and fire tenders along calculated tactical routes.</p>
@@ -317,22 +317,22 @@ tailwind.config = {
         <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
           <p class="font-headline font-bold text-sky-400 mb-1">ViT-B/16</p>
           <p class="text-xs text-slate-300 font-semibold">Vision Transformer</p>
-          <p class="text-[10px] text-on-surface-variant mt-1">86.4M Parameters</p>
+          <p class="text-xs text-on-surface-variant mt-1">86.4M Parameters</p>
         </div>
         <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
           <p class="font-headline font-bold text-orange-400 mb-1">Grad-CAM</p>
           <p class="text-xs text-slate-300 font-semibold">Explainable AI</p>
-          <p class="text-[10px] text-on-surface-variant mt-1">Attention Heatmaps</p>
+          <p class="text-xs text-on-surface-variant mt-1">Attention Heatmaps</p>
         </div>
         <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
           <p class="font-headline font-bold text-emerald-400 mb-1">OSRM Engine</p>
           <p class="text-xs text-slate-300 font-semibold">Tactical Routing</p>
-          <p class="text-[10px] text-on-surface-variant mt-1">Shortest-Path Graph</p>
+          <p class="text-xs text-on-surface-variant mt-1">Shortest-Path Graph</p>
         </div>
         <div class="p-5 bg-surface-container-low rounded-xl border border-outline-variant/10 text-center">
           <p class="font-headline font-bold text-amber-400 mb-1">NVIDIA CUDA</p>
           <p class="text-xs text-slate-300 font-semibold">GPU Acceleration</p>
-          <p class="text-[10px] text-on-surface-variant mt-1">High-Throughput FP32</p>
+          <p class="text-xs text-on-surface-variant mt-1">High-Throughput FP32</p>
         </div>
       </div>
     </div>
